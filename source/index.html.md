@@ -1,5 +1,5 @@
 ---
-title: FIX Trade Specification
+title: Locates FIX API Specification
 
 
 toc_footers:
@@ -9,466 +9,307 @@ search: true
 ---
 
 # Introduction
-FIX trade specification details the tags and values along with description of values for each trade field for processing incoming trades from OMS clients. Clear Street currently utilizes FIX 4.2 format.
+Locates FIX API specification details the tags and values along with description of values for each field for processing locate requests and acceptances from OMS clients. Clear Street currently utilizes FIX 4.2 format.
 
 # Configuring FIX Session
-
 ```
 // Example Config
 [DEFAULT]
 ReconnectInterval=5
-SenderCompID=TEST
-FileLogPath=/tmp
+SenderCompID=LOCATESCLIENT
 HeartBtInt=30
 SocketAcceptPort=31234
 TargetCompID=CLST
 HeartBtInt=30
 SocketConnectPort=31234
 SocketConnectHost=100.0.0.0
-SessionQualifier=1
 BeginString=FIX.4.2
 
 [SESSION]
-StartTime=10:00:00
-EndTime=02:00:00
-SQLStoreDriver=postgres
+StartTime=04:00:00
+EndTime=22:00:00
 ```
-A FIX session is defined as a unique combination of a `BeginString` (the FIX version number 4.2), a
-`SenderCompID` (OMS Client ID as defined by Clear Street), and a `TargetCompID` (Clear Street's ID CLST). A `SessionQualifier` can also be used to disambiguate otherwise identical sessions.
+A FIX session is defined as a unique combination of a `BeginString` (the FIX version number 4.2), a `SenderCompID` (OMS Client ID as defined by Clear Street), and a `TargetCompID`.
 
-A FIX session has an active time period during which all data is transmitted. Clear Street currently accepts connections between 5 AM EST to 9 PM EST on all business days.
+A FIX session has an active time period during which all data is transmitted. Clear Street currently accepts connections between 4 AM EST to 10 PM EST on all business days. Clear Street will act as an acceptor and OMS will be the initiator.
 
-A Logon message (Tag 35=A) must be sent to Clear Street on every business day to indicate the beginning of activity and a Logout message (Tag 35=5)must be sent to Clear Street indicating end of activity for that day.
+A `Logon` message (`Tag 35=A`) must be sent to Clear Street on every business day to indicate the begining of activity and a `Logout` message (`Tag 35=5`)must be sent to Clear Street indicating end of activity for that day. 
 
-Clear Street also recommends exchanging heartbeats every 30 seconds by sending a message with tag 35=0.
+Clear Street also recommends exchange of heartbeats every 30 seconds by sending a message with `Tag 35=0`.
 
-Clear Street expects every message sent to have a unique continuous sequence number as part of message with tag 34=. If there are any gaps in sequence numbers, a sequence reset message will sent to OMS client with tag 34=4.
+Clear Street expects every message to have a unique continuous sequence number as part of message with `Tag 34`. If there are any gaps in sequence numbers, a sequence reset message will be sent to OMS client with tag `34=4`.
 
-All trade messages must have tag 35=8 indicating that each message is an execution report. Please note that we have added few custom tags starting with 9001 to allow clients to send specific information needed for trades to be processed at our end. These tags are listed as part of the inbound specification.
+All requests must either provide a `Symbol` (Tag 55) or both `IDSource` (Tag 22) and `SecurityID` (Tag 48) to clearly identify a security. `IDSource` (Tag 22) and `SecurityID` are marked as conditionally required for this purpose.
 
+# Message Flows
 
-# FIX Inbound Trade Specification
+Currently we support two different message flows.
 
-## Allocation Trade
+## Preferred Message Flow
+We request all new OMSs to follow this message flow
 
+1. OMS will send a `Quote Request` message to locate securities
+2. Clear Street responds by sending a `Quote` message with the located securities information including Locate_ID in `Tag 117`.
+3. OMS will send a `New Order` message by setting `Tag 117` with the Locate_ID that Clear Street provided.
+4. Clear Street responds by sending an `Execution Report` message with status update such as accepted/expired/etc  in `Tag 39`
 
-```
-8=FIX.4.29=25335=849=OMS_CLIENT56=0000913234=12914352=20201021-21:42:34
-20=09001=A1=10007817=CLIENT_TRADE_ID75=2020102122=448=US70450Y1038
-421=USA15=USD31=000213.48000032=0000000298754=263=064=20201023
-60=20201021-13:42:34.12347=A76=ABCD79=10001710=180
-```
+## Existing Message Flow
+This flow will be decommissioned in the future once all OMSs migrate to the preferred message flow above.
 
+1. OMS will send a `New Order` message to locate securities
+2. Clear Street responds by sending an `Execution Report` message with the located securities information including Locate_ID in `Tag 37`.
+3. OMS will send a `New Order` message by setting `Tag 117` with the Locate_ID with status code that Clear Street provided. To accept OMS need to send Locate_ID,1 for `Tag 117` and to reject OMS need to send Locate_ID,3 for `Tag 117`.
+4. Clear Street responds by sending an `Execution Report` message with status update such as accepted/expired/etc in `Tag 39`
 
-```
-BeginString 8=FIX.4.2
-BodyLength9=253
-MsgType 35=8
-SenderCompID49=TEST
-TargetCompID 56=CLST
-MsgSeqNum 34=129143
-SendingTime52=20201021-21:42:34
-ExecutionTransactionType20=0
-TradeType 9001=A
-AccountID1=100078
-ClientTradeID17=CLIENT_TRADE_ID
-TradeDate75=20201021
-InstrumentIdentifierType 22=4
-InstrumentIdentifier48=US70450Y1038
-InstrumentCountry421=USA
-InstrumentCurrency15=USD
-Price31=000213.480000
-Quantity32=00000002987
-Side54=2
-SettlementDateType 63=0
-SettlementDate 64=20201023
-TradeExecutionTime60=20201021-13:42:34.123
-Capacity 47=A
-TargetAccountID 79=100017
-CheckSum 10=180
-```
+# Message List
 
-This trade type is used to facilitate average-price workflows, i.e. averaging many
-trades for a customer and allocating it to them as a single trade.
+| Message | Tag 35 | Comments | Direction w.r.t. CLST |
+| --- | --- | --- | --- |
+| New Order - Single | D | 1. Request to locate a single security <br/>2. Request to Accept/Reject a single locate | Incoming |
+| New Order - List | E | 1. Request to locate multiple securities <br/>2. Request to Accept/Reject multiple locates | Incoming |
+| Execution Report | 8 | 1. Offer response for a single locate request with locate id <br/>2. Status response for a single locate accept/reject message with locate id <br/>3. Multiple status responses for a list of locate accept/reject messages with locate ids | Outgoing |
+| Reject | 3 | 1. Any validation/authentication errors on the Order requests | Outgoing |
+| Quote Request | R | 1. Request to locate a list of securities | Incoming |
+| Quote | S | 1. Response for quote request. Multiple responses are sent depending on the number of quotes requested. | Outgoing |
 
-| Name | FIX Tag | Allowable Values | Type | Length | Required? | Description |
-| - | - | - | - | - | - | - |
-| `ExecutionTransactionType` | `20` | `0` `1` | `Integer` | `1` | `R` | `0-New` `1-Cancel` |
-| `TradeType` | `9001` | `A` | `String` | `1` | `R` | `A-Allocation` |
-| `AccountID` | `1` |  | `Integer` | `6` | `R` | Clear Street provided account id |
-| `BehalfOfAccountID` | `109` |  | `Integer` | `6` | `O` | Clear Street provided account ID if this trade is on behalf of another account |
-| `BranchOffice` | `9003` |  | `String` |  | `O` | Branch office for this trade |
-| `TradeID` | `17` |  | `String` |  | `R` | Unique Trade ID for this trade. Must be unique across days |
-| `CancelTradeID` | `9009` |  | `String` |  | `CR` | Original trade ID to cancel; Required for all Cancel trades |
-| `TradeDate` | `75` |  | `Integer` | `8` | `R` | Trade Date in `YYYYMMDD` format |
-| `Instrument Identifier Type` | `22` | `1` `2` `4` `8` | `Integer` | `1` | `CR` | `1-CUSIP 2-SEDOL 4-ISIN 8-TICKER` Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `8` |
-| `Instrument Identifier` | `48` |  | `String` |  | `CR` | Instrument Identifier based on tag 22 Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `AAPL` |
-| `Security Type` | `167` | | `String` | | `CR` | Indicates type of security. Required for Options where tags 22 or 48 are not provided. | `OPT` |
-| `Symbol` | `55` | | `String` | `6` | `CR` | Ticker symbol. Required for Options where tags 22 or 48 are not provided. | `SPY` |
-| `Maturity Month Year` | `200` | | `Integer` | `6` | `CR` | Month and year of the maturity for an Option. Maturity Month Year in format `YYYYMM`. Required for Options where tags 22 or 48 are not provided. | `202107` |
-| `Put Or Call` | `201` | `0` `1` | `Integer` | `1` | `CR` | Indicates whether an Option is for a put or a call `0 = Put` `1 = Call` Required for Options where tags 22 or 48 are not provided. | `1` |
-| `Strike Price` | `202` | | `Decimal` | `8` | `CR` | Strike Price for an Option. Required for Options where tags 22 or 48 are not provided. | `100.50` |
-| `Maturity Day` | `205` | | `Integer` | `2` | `CR` | To be used in conjunction with Maturity Month Year `200` to specify a particular maturity date for an Option. Required for Options where tags 22 or 48 are not provided. | `30` | 
-| `InstrumentCountry` | `421` |  | `String` | `3` | `R` | ISO 3166 alpha-3 country code where the instrument trades |
-| `InstrumentCurrency` | `15` |  | `String` | `3` | `R` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `Price` | `31` |  | `Decimal` |  | `R` | The price of the trade |
-| `Quantity` | `32` |  | `Decimal` |  | `R` | The quantity of the trade (supports fractional quantities) |
-| `RegisteredRep` | `9002` |  | `String` |  | `O` | Registered rep on this trade |
-| `Side` | `54` | `1` `2` `5` `6` | `Integer` | `1` | `R` | `1-Buy` `2-Sell` `5-Sell Short` `6-Sell Exempt` |
-| `PositionType` | `77` | `C` `O` | `String` | `1` | `O` | `C-Close ` `O-Open` |
-| `SettlementCurrency` | `120` |  | `String` | `3` | `O` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `SettlementDateType` | `63` | `0` `7` | `Integer` | `1` | `R` | `0-Regular` `7-When_Issued` |
-| `SettlementDate` | `64` |  | `Integer` | `8` | `CR` | Defaults to 99991231 for when issued trades and not required for when issued trades. Settlement date in `YYYYMMDD` format |
-| `Solicited` | `325` | `F` `T` | `String` | `1` | `O` | `F-Solicited` `T-Not Solicited` |
-| `TradeExecutionTime` | `60` |  | `UTCTimestamp` |  | `R` | Timestamp of when the trade occurred in YYYYMMDD-HH:MM:SS.sss |
-| `Capacity` | `47` | `A` `M` `P` `R` | `String` | `1` | `R` | `A-Agency` `M-Mixed` `P-Principal` `R-Riskless Principal` |
-| `ContraSideQualifier` | `9004` | `5` `6` | `Integer` |  | `CR` | `5-Sell Short` `6-Sell Exempt` |
-| `Commission` | `12` |  | `Decimal` |  | `O` | Commission charged or paid |
-| `TargetAccountID` | `79` |  | `Integer` |  | `R` | Clear Street provided account ID  |
-| `OmitSECFee` | `9005` | `F` `T` | `String` | `1` | `O` | True if SEC fees should not be applied |
-| `OmitTAFFee` | `9006` | `F` `T` | `String` | `1` | `O` | True if TAF fees should not be applied |
-| `OrderID` | `37` |  | `String` |  | `O` | Order ID to link all the executions in the average price account |
-
-
-## Away Trade
+# New Order - Single (Request)
 
 ```
-8=FIX.4.29=26135=849=OMS_CLIENT56=0000913234=12914552=20201021-21:42:34
-20=09001=W1=10007817=CLIENT_TRADE_ID75=2020102122=448=US70450Y1038
-421=USA15=USD31=000213.48000032=0000000298754=263=064=20201023
-60=20201021-13:42:34.12347=M440=0295375=ABCD76=WXYZ10=180
+// Example 1: By Symbol
+8=FIX.4.29=005435=D49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0111=1234567155=IBM54=160=20220208-21:10:00.79240=1109=ACCOUNTID76=USRNM,PSWD38=1000440=TRADERID1=ACCOUNTID58=THISISASINGLELOCATEREQUESTBYSYMBOL10=106
+```
+```
+// Example 2: By CUSIP
+8=FIX.4.29=005435=D49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0111=1234567254=160=20220208-21:10:00.79240=1109=ACCOUNTID76=USRNM,PSWD38=100022=148=459200101440=TRADERID1=ACCOUNTID58=THISISASINGLELOCATEREQUESTBYCUSIP10=106
 ```
 
+`New Order - Single` is a request sent by OMS to locate a single security. 
+
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | D | Message type | D | AlphaNumeric | 1 | Required |
+| ClOrdID | 11 |  | Unique ID for the Order |  | AlphaNumeric | 25 | Required |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
+| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required |
+| ClientID | 109 |  | Firm ID/MPID | CLST | AlphaNumeric |  | Required |
+| ExecBroker | 76 |  | Credential string: username,password | USRNM,PSWD | AlphaNumeric |  | Required |
+| OrderQty | 38 |  | Number of share ordered | 1000 | Numeric |  | Required |
+| Account | 1 |  | Account ID | ACCTID | AlphaNumeric |  | Required |
+| HandInst | 21 | 1-Auto, Private<br/>2-Auto, Public<br/>3-Manual | Instructions for order handling on Broker trading floor | 1 | Numeric | 1 | Optional |
+| Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Optional |
+| OrdType | 40 | 1-Market<br/>2-Limit<br/>3-Stop<br/>4-Stop Limit<br/>5-Market On Close<br/>6-With or Without<br/>7-Limit or Better<br/>8-Limit With or Without<br/>9-On Basis<br/>A-On Close<br/>B-Limit On Close<br/>C-Forex C<br/>D-Previously Quoted<br/>E-Previously Indicated<br/>F-Forext F<br/>G-Forex G<br/>H-Forex H<br/>I-Funari<br/>P-Pegged | Order Type | 1 | AlphaNumeric | 1 | Optional |
+| ClearingAccount | 440 |  | Trader ID | TRDRID | AlphaNumeric |  | Optional |
+| Text | 58 |  | Any comments by trader | comment | AlphaNumeric |  | Optional |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type  | 1 | Numeric | 1 | Conditionally Required |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required |
+
+
+# New Order - List (Request)
 ```
-BeginString 8=FIX.4.2
-BodyLength9=261
-MsgType35=8
-SenderCompID49=OMS_CLIENT
-TargetCompID56=CLST
-MsgSeqNum34=129145
-SendingTime52=20201021-21:42:34
-ExecutionTransactionType20=0
-TradeType9001=W
-AccountID1=100078
-ClientTradeID17=CLIENT_TRADE_ID
-TradeDate75=20201021
-InstrumentIdentifierType22=4
-InstrumentIdentifier 48=US70450Y1038
-InstrumentCountry421=USA
-InstrumentCurrency15=USD
-Price31=000213.480000
-Quantity32=00000002987
-Side54=2
-SettlementDateType63=0
-SettlmenetDate64=20201023
-TradeExecutionTime60=20201021-13:42:34.123
-Capacity47=M
-ContraClearingNum 440=0295
-ContraMPID375=ABCD
-ExecutingMPID 76=WXYZ
-Checksum10=180
+8=FIX.4.29=005435=E49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0166=10000001394=368=273=211=1234568167=155=IBM54=158=THISISALISTLOCATEREQUESTBYSYMBOL60=20220208-21:10:00.79240=1109=ACCOUNTID76=USRNM,PSWD38=1000440=TRADERID1=ACCOUNTID11=1234568167=255=AAPL54=158=THISISALISTLOCATEREQUESTBYSYMBOL60=20220208-21:10:00.79240=1109=ACCOUNTID76=USRNM,PSWD38=2000440=TRADERID1=ACCOUNTID10=106
 ```
-This trade type represents a customer executing away from Clear Street LLC. For example, direct customer of CLST routes
-order for execution to Goldman.
+`New Order - List` is a request sent by OMS to locate multiple securities. Please note that repeatable fields must follow the same order mentioned in this document.
 
-| Name | FIX Tag | Allowable Values | Type | Length | Required? | Description |
-| - | - | - | - | - | - | - | 
-| `ExecutionTransactionType` | `20` | `0` `1` | `Integer` | `1` | `R` | `0-New` `1-Cancel` |
-| `TradeType` | `9001` | `W` | `String` | `1` | `R` | `W-Away` |
-| `AccountID` | `1` |  | `Integer` | `6` | `R` | Clear Street provided account id |
-| `BehalfOfAccountID` | `109` |  | `Integer` | `6` | `O` | Clear Street provided account ID if this trade is on behalf of another account | 
-| `BranchOffice` | `9003` |  | `String` |  | `O` | Branch office for this trade |
-| `TradeID` | `17` |  | `String` |  | `R` | Unique Trade ID for this trade. Must be unique across days |
-| `CancelTradeID` | `9009` |  | `String` |  | `CR` | Original trade ID to cancel; Required for all Cancel trades |
-| `TradeDate` | `75` |  | `Integer` | `8` | `R` | Trade Date in `YYYYMMDD` format |
-| `Instrument Identifier Type` | `22` | `1` `2` `4` `8` | `Integer` | `1` | `CR` | `1-CUSIP 2-SEDOL 4-ISIN 8-TICKER` Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `8` |
-| `Instrument Identifier` | `48` |  | `String` |  | `CR` | Instrument Identifier based on tag 22 Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `AAPL` |
-| `Security Type` | `167` | | `String` | | `CR` | Indicates type of security. Required for Options where tags 22 or 48 are not provided. | `OPT` |
-| `Symbol` | `55` | | `String` | `6` | `CR` | Ticker symbol. Required for Options where tags 22 or 48 are not provided. | `SPY` |
-| `Maturity Month Year` | `200` | | `Integer` | `6` | `CR` | Month and year of the maturity for an Option. Maturity Month Year in format `YYYYMM`. Required for Options where tags 22 or 48 are not provided. | `202107` |
-| `Put Or Call` | `201` | `0` `1` | `Integer` | `1` | `CR` | Indicates whether an Option is for a put or a call `0 = Put` `1 = Call` Required for Options where tags 22 or 48 are not provided. | `1` |
-| `Strike Price` | `202` | | `Decimal` | `8` | `CR` | Strike Price for an Option. Required for Options where tags 22 or 48 are not provided. | `100.50` |
-| `Maturity Day` | `205` | | `Integer` | `2` | `CR` | To be used in conjunction with Maturity Month Year `200` to specify a particular maturity date for an Option. Required for Options where tags 22 or 48 are not provided. | `30` | 
-| `InstrumentCountry` | `421` |  | `String` | `3` | `R` | ISO 3166 alpha-3 country code where the instrument trades |
-| `InstrumentCurrency` | `15` |  | `String` | `3` | `R` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `Price` | `31` |  | `Decimal` |  | `R` | The price of the trade |
-| `Quantity` | `32` |  | `Decimal` |  | `R` | The quantity of the trade (supports fractional quantities) |
-| `RegisteredRep` | `9002` |  | `String` |  | `O` | Registered rep on this trade |
-| `Side` | `54` | `1` `2` `5` `6` | `Integer` | `1` | `R` | `1-Buy` `2-Sell` `5-Sell Short` `6-Sell Exempt` |
-| `PositionType` | `77` | `C` `O` | `String` | `1` | `O` | `C-Close` `O-Open` |
-| `SettlementCurrency` | `120` |  | `String` | `3` | `O` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `SettlementDateType` | `63` | `0` `7` | `Integer` | `1` | `R` | `0-Regular` `7-When_Issued` |
-| `SettlementDate` | `64` |  | `Integer` | `8` | `CR` | Defaults to 99991231 for when issued trades and not required for when issued trades. Settlement date in `YYYYMMDD` format |
-| `Solicited` | `325` | `F` `T` | `String` | `1` | `O` | `F-Solicited` `T-Not Solicited` |
-| `TradeExecutionTime` | `60` |  | `UTCTimestamp` |  | `R` | Timestamp of when the trade occurred in YYYYMMDD-HH:MM:SS.sss |
-| `Capacity` | `47` | `A` `M` `P` `R` | `String` | `1` | `R` | `A-Agency` `M-Mixed` `P-Principal` `R-Riskless Principal` |
-| `ContraClearingNumber` | `440` |  | `Integer` | `4` | `O` | Contra-party's clearing number, If not supplied the value will be derived from an internal MPID to clearing number mapping |
-| `ContraMPID` | `375` |  | `String` | `4` | `R` | Contra-party's MPID |
-| `ExecutingMPID` | `76` |  | `String` | `4` | `R` | Executing party's MPID |
-| `ContraSideQualifier` | `9004` | `5` `6` | `Integer` |  | `CR` | `5-Sell Short` `6-Sell Exempt` |
-| `MIC` | `30` |  | `String` | `4` | `O` | ISO 10383 Market Identifer Code for the exchange |
-| `Commission` | `12` |  | `Decimal` |  | `O` | Commission charged or paid |
-| `OmitSECFee` | `9005` | `F` `T` | `String` | `1` | `O` | True if SEC fees should not be applied |
-| `OmitTAFFee` | `9006` | `F` `T` | `String` | `1` | `O` | True if TAF fees should not be applied |
-| `LocateID` | `9007` |  | `String` |  | `CR` | Locate ID obtained for a short sale; Required for Sell Short |
-| `LocateSource` | `9008` |  | `String` |  | `CR` | Firm supplying the locate (usually MPID); Required for Sell Short |
-| `OrderID` | `37` |  | `String` |  | `O` | Order ID to link all the executions in the average price account |
-| `NSCCClearing` | `9010` | `agu` `contra` `corr` `corr_fees` `qsr` | `String` |  | `O` | `agu` `contra` `corr` `corr_fees` `qsr` |
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required | Repeatable |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | E | Message type | E | AlphaNumeric | 1 | Required | No |
+| ListID | 66 |  | Unique ID for the Order |  | AlphaNumeric |  | Required | No |
+| BidType | 394 | 1-Non Disclosed<br/>2-Disclosed<br/>3-No Bidding Process | Code to identify the type of Bid request | 3 | Numeric | 1 | Required | No |
+| TotNoOrders | 68 |  | Total number of list order entries across all messages |  | Numeric |  | Required | No |
+| NoOrders | 73 |  | Number of orders in this message |  | Numeric |  | Required | No |
+| ClOrdID | 11 |  | Unique ID for the Order. Must be the first in the repeatable list. |  | AlphaNumeric | 25 | Required | Yes |
+| ListSeqNo | 67 |  | Order number within this list |  | Numeric |  | Required | Yes |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required | Yes |
+| Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Optional | Yes |
+| Text | 58 |  | Any comments by trader | comment | AlphaNumeric |  | Optional | Yes |
+| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required | Yes |
+| OrdType | 40 | 1-Market<br/>2-Limit<br/>3-Stop<br/>4-Stop Limit<br/>5-Market On Close<br/>6-With or Without<br/>7-Limit or Better<br/>8-Limit With or Without<br/>9-On Basis<br/>A-On Close<br/>B-Limit On Close<br/>C-Forex C<br/>D-Previously Quoted<br/>E-Previously Indicated<br/>F-Forext F<br/>G-Forex G<br/>H-Forex H<br/>I-Funari<br/>P-Pegged | Order Type | 1 | AlphaNumeric | 1 | Optional | Yes |
+| ClientID | 109 |  | Firm ID/MPID | CLST | AlphaNumeric |  | Required | Yes |
+| ExecBroker | 76 |  | Credential string: username,password | USRNM,PSWD | AlphaNumeric |  | Required | Yes |
+| OrderQty | 38 |  | Number of share ordered | 1000 | Numeric |  | Required | Yes |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required | Yes |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required | Yes |
+| ClearingAccount | 440 |  | Trader ID | TRDRID | AlphaNumeric |  | Optional | Yes |
+| Account | 1 |  | Account ID | ACCTID | AlphaNumeric |  | Required | Yes |
 
 
-
-## Bilateral Trade
-
+# Execution Report (Request)
 ```
-8=FIX.4.29=26135=849=OMS_CLIENT56=0000913234=12914152=20201021-21:42:34
-20=09001=B1=10007817=CLIENT_TRADE_ID75=2020102122=448=US70450Y1038
-421=USA15=USD31=000213.48000032=0000000298754=263=064=20201023
-60=20201021-13:42:34.12347=M440=0295375=ABCD76=WXYZ10=180
+8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000411=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATERESPONSEBYSYMBOL17=20000420=0150=B39=B1=ACCOUNTID151=014=10006=23.0044=0.2310=025
 ```
+`Execution Report` (One Response Message for each item in List of Order Request) is a response sent by Clear Street with a locate. 
+There will be one response message for each item if the response is for a list of multiple securities request via `New Order - List`
+
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | 8 | Message type | 8 | AlphaNumeric | 1 | Required |
+| OrderID | 37 |  | Unique Locate ID |  | AlphaNumeric |  | Required |
+| ClOrdID | 11 |  | ClOrdID from the New Order message |  | AlphaNumeric | 25 | Required |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
+| Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Required |
+| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required |
+| ClientID | 109 |  | Same as Account ID | CLST | AlphaNumeric |  | Required |
+| OrderQty | 38 |  | Number of share requested | 1000 | Numeric |  | Required |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required |
+| Text | 58 |  | Any comments by locating broker or indicating partial fills or part of original order | comment | AlphaNumeric |  | Optional |
+| ExecID | 17 |  | Unique ID for each message |  | Numeric |  | Required |
+| ExecTransType | 20 | 0-New<br/>1-Cancel<br/>2-Correct<br/>3-Status | Transaction type | 0 | Numeric | 1 | Required |
+| ExecType | 150 | 0-New<br/>1-Partial Fill<br/>2-Filled<br/>3-Done for Day<br/>8-Rejected<br/>B-Calculated/Offered<br/>C-Expired | Type of Execution report | B | AlphaNumeric | 1 | Required |
+| OrdStatus | 39 | 0-New<br/>1-Partial Fill<br/>2-Filled<br/>3-Done for Day<br/>8-Rejected<br/>B-Calculated/Offered<br/>C-Expired | Current status of Order | B | AlphaNumeric | 1 | Required |
+| Account | 1 |  | Account ID from Order | ACCTID | AlphaNumeric |  | Required |
+| LeavesQty | 151 |  | Amount of shares open for further execution |  | Numeric |  | Required |
+| CumQty | 14 |  | Currently executed shares |  | Numeric |  | Required |
+| AvgPx | 6 |  | Calculated average price |  | Numeric |  | Required |
+| Price | 44 |  | Price |  | Numeric |  | Required |
+
+
+# New Order-Single (Accept/Reject) 
 
 ```
-BeginString 8=FIX.4.2
-BodyLength9=261
-MsgType35=8
-SenderCompID49=OMS_CLIENT
-TargetCompID56=CLST
-MsgSeqNum34=129145
-SendingTime52=20201021-21:42:34
-ExecutionTransactionType20=0
-TradeType9001=B
-AccountID1=100078
-ClientTradeID17=CLIENT_TRADE_ID
-TradeDate75=20201021
-InstrumentIdentifierType22=4
-InstrumentIdentifier 48=US70450Y1038
-InstrumentCountry421=USA
-InstrumentCurrency15=USD
-Price31=000213.480000
-Quantity32=00000002987
-Side54=2
-SettlementDateType63=0
-SettlmenetDate64=20201023
-TradeExecutionTime60=20201021-13:42:34.123
-Capacity47=M
-ContraClearingNum 440=0295
-ContraMPID375=ABCD
-ExecutingMPID 76=WXYZ
-Checksum10=180
+// Example 1: Accept
+8=FIX.4.29=005435=D49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0111=1234568160=20220208-21:10:00.792109=ACCOUNTID76=USRNM,PSWD1=ACCOUNTID117=100011,110=106
+```
+```
+// Example 2: Accept
+8=FIX.4.29=005435=D49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0111=1234568160=20220208-21:10:00.792109=ACCOUNTID76=USRNM,PSWD1=ACCOUNTID117=10001110=106
+```
+```
+// Example 3: Reject
+8=FIX.4.29=005435=D49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0111=1234568160=20220208-21:10:00.792109=ACCOUNTID76=USRNM,PSWD1=ACCOUNTID117=100011,210=106
 ```
 
-This trade represents a trade between two trading entities. For example, trading firm XYZ buys 100 share of AAPL from
-trading firm ABC.
+`New Order-Single (Accept/Reject)`  is a request sent by OMS to accept/reject a locate that was offered by Clear Street. 
 
-| Name | FIX Tag | Allowable Values | Type | Length | Required? | Description |
-| - | - | - | - | - | - | - |
-| `ExecutionTransactionType` | `20` | `0` `1` | `Integer` | `1` | `R` | `0-New` `1-Cancel` |
-| `TradeType` | `9001` | `B` | `String` | `1` | `R` | `B-Bilateral` |
-| `AccountID` | `1` |  | `Integer` | `6` | `R` | Clear Street provided account id |
-| `BehalfOfAccountID` | `109` |  | `Integer` | `6` | `O` | Clear Street provided account ID if this trade is on behalf of another account |
-| `BranchOffice` | `9003` |  | `String` |  | `O` | Branch office for this trade |
-| `TradeID` | `17` |  | `String` |  | `R` | Unique Trade ID for this trade. Must be unique across days |
-| `CancelTradeID` | `9009` |  | `String` |  | `CR` | Original trade ID to cancel; Required for all Cancel trades |
-| `Trade Date` | `75` |  | `Integer` | `8` | `R` | Trade Date in `YYYYMMDD` format |
-| `Instrument Identifier Type` | `22` | `1` `2` `4` `8` | `Integer` | `1` | `CR` | `1-CUSIP 2-SEDOL 4-ISIN 8-TICKER` Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `8` |
-| `Instrument Identifier` | `48` |  | `String` |  | `CR` | Instrument Identifier based on tag 22 Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `AAPL` |
-| `Security Type` | `167` | | `String` | | `CR` | Indicates type of security. Required for Options where tags 22 or 48 are not provided. | `OPT` |
-| `Symbol` | `55` | | `String` | `6` | `CR` | Ticker symbol. Required for Options where tags 22 or 48 are not provided. | `SPY` |
-| `Maturity Month Year` | `200` | | `Integer` | `6` | `CR` | Month and year of the maturity for an Option. Maturity Month Year in format `YYYYMM`. Required for Options where tags 22 or 48 are not provided. | `202107` |
-| `Put Or Call` | `201` | `0` `1` | `Integer` | `1` | `CR` | Indicates whether an Option is for a put or a call `0 = Put` `1 = Call` Required for Options where tags 22 or 48 are not provided. | `1` |
-| `Strike Price` | `202` | | `Decimal` | `8` | `CR` | Strike Price for an Option. Required for Options where tags 22 or 48 are not provided. | `100.50` |
-| `Maturity Day` | `205` | | `Integer` | `2` | `CR` | To be used in conjunction with Maturity Month Year `200` to specify a particular maturity date for an Option. Required for Options where tags 22 or 48 are not provided. | `30` | 
-| `InstrumentCountry` | `421` |  | `String` | `3` | `R` | ISO 3166 alpha-3 country code where the instrument trades |
-| `InstrumentCurrency` | `15` |  | `String` | `3` | `R` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `Price` | `31` |  | `Decimal` |  | `R` | The price of the trade |
-| `Quantity` | `32` |  | `Decimal` |  | `R` | The quantity of the trade (supports fractional quantities) |
-| `RegisteredRep` | `9002` |  | `String` |  | `O` | Registered rep on this trade |
-| `Side` | `54` | `1` `2` `5` `6` | `Integer` | `1` | `R` | `1-Buy` `2-Sell` `5-Sell Short` `6-Sell Exempt` |
-| `PositionType` | `77` | `C` `O` | `String` | `1` | `O` | `C-Close ` `O-Open` |
-| `SettlementCurrency` | `120` |  | `String` | `3` | `O` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `SettlementDateType` | `63` | `0` `7` | `Integer` | `1` | `R` | `0-Regular` `7-When_Issued` |
-| `SettlementDate` | `64` |  | `Integer` | `8` | `CR` | Defaults to 99991231 for when issued trades and not required for when issued trades. Settlement date in `YYYYMMDD` format |
-| `Solicited` | `325` | `F` `T` | `String` | `1` | `O` | `F-Solicited` `T-Not Solicited` |
-| `TradeExecutionTime` | `60` |  | `UTCTimestamp` |  | `R` | Timestamp of when the trade occurred in YYYYMMDD-HH:MM:SS.sss |
-| `Capacity` | `47` | `A` `M` `P` `R` | `String` | `1` | `R` | `A-Agency` `M-Mixed` `P-Principal` `R-Riskless Principal` |
-| `ContraClearing Number` | `440` |  | `Integer` | `4` | `O` | Contra-party's clearing number, If not supplied the value will be derived from an internal MPID to clearing number mapping |
-| `ContraMPID` | `375` |  | `String` | `4` | `R` | Contra-party's MPID |
-| `ExecutingMPID` | `76` |  | `String` | `4` | `R` |Executing party's MPID |
-| `ContraSideQualifier` | `9004` | `5` `6` | `Integer` |  | `CR` | `5-Sell Short` `6-Sell Exempt` |
-| `MIC` | `30` |  | `String` | `4` | `O` | ISO 10383 Market Identifer Code for the exchange |
-| `Commission` | `12` |  | `Decimal` |  | `O` | Commission charged or paid |
-| `OmitSECFee` | `9005` | `F` `T` | `String` | `1` | `O` | True if SEC fees should not be applied |
-| `OmitTAFFee` | `9006` | `F` `T` | `String` | `1` | `O` | True if TAF fees should not be applied |
-| `LocateID` | `9007` |  | `String` |  | `CR` | Locate ID obtained for a short sale; Required for Sell Short |
-| `LocateSource` | `9008` |  | `String` |  | `CR` | Firm supplying the locate (usually MPID); Required for Sell Short |
-| `OrderID` | `37` |  | `String` |  | `O` | Order ID to link all the executions in the average price account |
-| `NSCC Clearing` | `9010` | `agu` `contra` `corr` `corr_fees` `qsr` | `String` | `O` | `agu` `contra` `corr` `corr_fees` `qsr` |
-| `LastLiquidityInd` | `851` | `1` `2` `3` `4` | `Integer` |  | `O` | `1 - Added Liquidity` `2 - Removed Liquidity` `3 - Liquidity Routed Out` `4 - Netted Liquidity` | `1` |
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | D | Message type | D | AlphaNumeric | 1 | Required |
+| ClOrdID | 11 |  | Unique ID for the Order |  | AlphaNumeric | 25 | Optional |
+| HandInst | 21 | 1-Auto, Private<br/>2-Auto, Public<br/>3-Manual | Instructions for order handling on Broker trading floor | 1 | Numeric | 1 | Optional |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Optional |
+| Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Optional |
+| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required |
+| OrdType | 40 | 1-Market<br/>2-Limit<br/>3-Stop<br/>4-Stop Limit<br/>5-Market On Close<br/>6-With or Without<br/>7-Limit or Better<br/>8-Limit With or Without<br/>9-On Basis<br/>A-On Close<br/>B-Limit On Close<br/>C-Forex C<br/>D-Previously Quoted<br/>E-Previously Indicated<br/>F-Forext F<br/>G-Forex G<br/>H-Forex H<br/>I-Funari<br/>P-Pegged | Order Type | 1 | AlphaNumeric | 1 | Optional |
+| ClientID | 109 |  | Firm ID/MPID | CLST | AlphaNumeric |  | Required |
+| ExecBroker | 76 |  | Credential string: username,password | USRNM,PSWD | AlphaNumeric |  | Required |
+| OrderQty | 38 |  | Number of share ordered | 1000 | Numeric |  | Optional |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required |
+| ClearingAccount | 440 |  | Trader ID | TRDRID | AlphaNumeric |  | Optional |
+| Account | 1 |  | Account ID | ACCTID | AlphaNumeric |  | Optional |
+| QuoteID | 117 | Locate_ID,1-Accept Locate<br/>Locate_ID,2-Reject Locate | Locate ID, Accept/Reject | 123456,1 | AlphaNumeric |  | Required |
 
 
-## Exchange Trade
-
+# New Order-List (Accept/Reject)
 ```
-8=FIX.4.29=25135=849=OMS_CLIENT56=0000913234=12914452=20201021-21:42:34
-20=09001=E1=10007817=CLIENT_TRADE_ID75=2020102122=448=US70450Y1038
-421=USA15=USD31=000213.48000032=0000000298754=263=064=20201023
-60=20201021-13:42:34.12347=R76=ABCD30=NYSE10=180
+8=FIX.4.29=005435=E49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0166=10000002394=368=273=211=1234568167=155=IBM54=158=THISISALISTLOCATEACCEPTBYSYMBOL60=20220208-21:10:00.79240=1109=ACCOUNTID76=USRNM,PSWD38=1000440=TRADERID1=ACCOUNTID117=200005,111=1234568167=255=AAPL54=158=THISISALISTLOCATEACCEPTBYSYMBOL60=20220208-21:10:00.79240=1109=ACCOUNTID76=USRNM,PSWD38=2000440=TRADERID1=ACCOUNTID117=200006,110=106
 ```
 
+`New Order-List (Accept/Reject)` is a request sent by OMS to accept/reject multiple locates that were offered by Clear Street. Please note that repeatable fields must follow the same order mentioned in this document.
+
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required | Repeatable |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | E | Message type | E | AlphaNumeric | 1 | Required | No |
+| ListID | 66 |  | Unique ID for the Order |  | AlphaNumeric |  | Required | No |
+| BidType | 394 | 1-Non Disclosed<br/>2-Disclosed<br/>3-No Bidding Process | Code to identify the type of Bid request | 3 | Numeric | 1 | Required | No |
+| TotNoOrders | 68 |  | Total number of list order entries across all messages |  | Numeric |  | Required | No |
+| NoOrders | 73 |  | Number of orders in this message |  | Numeric |  | Required | No |
+| ClOrdID | 11 |  | Unique ID for the Order. Must be the first in the repeatable list. |  | AlphaNumeric | 25 | Required | Yes |
+| ListSeqNo | 67 |  | Order number within this list |  | Numeric |  | Required | Yes |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required | Yes |
+| Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Optional | Yes |
+| Text | 58 |  | Any comments by trader | comment | AlphaNumeric |  | Optional | Yes |
+| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required | Yes |
+| OrdType | 40 | 1-Market<br/>2-Limit<br/>3-Stop<br/>4-Stop Limit<br/>5-Market On Close<br/>6-With or Without<br/>7-Limit or Better<br/>8-Limit With or Without<br/>9-On Basis<br/>A-On Close<br/>B-Limit On Close<br/>C-Forex C<br/>D-Previously Quoted<br/>E-Previously Indicated<br/>F-Forext F<br/>G-Forex G<br/>H-Forex H<br/>I-Funari<br/>P-Pegged | Order Type | 1 | AlphaNumeric | 1 | Optional | Yes |
+| ClientID | 109 |  | Firm ID/MPID | CLST | AlphaNumeric |  | Required | Yes |
+| ExecBroker | 76 |  | Credential string: username,password | USRNM,PSWD | AlphaNumeric |  | Required | Yes |
+| OrderQty | 38 |  | Number of share ordered | 1000 | Numeric |  | Required | Yes |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required | Yes |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required | Yes |
+| ClearingAccount | 440 |  | Trader ID | TRDRID | AlphaNumeric |  | Optional | Yes |
+| Account | 1 |  | Account ID | ACCTID | AlphaNumeric |  | Required | Yes |
+| QuoteID | 117 | Locate_ID,1-Accept Locate<br/>Locate_ID,2-Reject Locate | Locate ID, Accept/Reject | 123456,1 | AlphaNumeric |  | Required | Yes |
+
+
+# Execution Report (Accept/Reject)
 ```
-BeginString 8=FIX.4.2
-BodyLength9=261
-MsgType35=8
-SenderCompID49=OMS_CLIENT
-TargetCompID56=CLST
-MsgSeqNum34=129145
-SendingTime52=20201021-21:42:34
-ExecutionTransactionType20=0
-TradeType9001=E
-AccountID1=100078
-ClientTradeID17=CLIENT_TRADE_ID
-TradeDate75=20201021
-InstrumentIdentifierType22=4
-InstrumentIdentifier 48=US70450Y1038
-InstrumentCountry421=USA
-InstrumentCurrency15=USD
-Price31=000213.480000
-Quantity32=00000002987
-Side54=2
-SettlementDateType63=0
-SettlementDate64=20201023
-TradeExecutionTime60=20201021-13:42:34.123
-Capacity47=R
-ExecutingMPID 76=WXYZ
-MIC 30=NYSE
-Checksum10=180
+8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
 ```
+`Execution Report` (One Response Message for each item in List of Order Accept/Reject) is a response sent by Clear Street confirming the accept/reject of a locate. 
+There will be one response message for each item if the response is for a list of multiple securities request via `New Order - List`
 
-This trade represents a trade between a trading entity and an exchange. For example, trading firm XYX buys 100 shares of
-AAPL directly on Nasdaq
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | 8 | Message type | 8 | AlphaNumeric | 1 | Required |
+| OrderID | 37 |  | Unique Locate ID |  | AlphaNumeric |  | Required |
+| ClOrdID | 11 |  | ClOrdID from the New Order message |  | AlphaNumeric | 25 | Required |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
+| Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Required |
+| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required |
+| ClientID | 109 |  | Same as Account ID | CLST | AlphaNumeric |  | Required |
+| OrderQty | 38 |  | Number of share requested | 1000 | Numeric |  | Required |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required |
+| Text | 58 |  | Any comments by locating broker or indicating partial fills or part of original order | comment | AlphaNumeric |  | Optional |
+| ExecID | 17 |  | Unique ID for each message |  | Numeric |  | Required |
+| ExecTransType | 20 | 0-New<br/>1-Cancel<br/>2-Correct<br/>3-Status | Transaction type | 0 | Numeric | 1 | Required |
+| ExecType | 150 | 0-New<br/>1-Partial Fill<br/>2-Filled<br/>3-Done for Day<br/>8-Rejected<br/>B-Calculated/Offered<br/>C-Expired | Type of Execution report | 2 | AlphaNumeric | 1 | Required |
+| OrdStatus | 39 | 0-New<br/>1-Partial Fill<br/>2-Filled<br/>3-Done for Day<br/>8-Rejected<br/>B-Calculated/Offered<br/>C-Expired | Current status of Order | 2 | AlphaNumeric | 1 | Required |
+| Account | 1 |  | Account ID from Order | ACCTID | AlphaNumeric |  | Required |
+| LeavesQty | 151 |  | Amount of shares open for further execution |  | Numeric |  | Required |
+| CumQty | 14 |  | Currently executed shares | 1000 | Numeric |  | Required |
+| AvgPx | 6 |  | Calculated average price | 0.23 | Numeric |  | Required |
 
-| Name | FIX Tag | Allowable Values | Type | Length | Required? | Description |
-| - | - | - | - | - | - | - |
-| `ExecutionTransactionType` | `20` | `0` `1` | `Integer` | `1` | `R` | `0-New` `1-Cancel` |
-| `TradeType` | `9001` | `E` | `String` | `1` | `R` | `E-Exchange` |
-| `AccountID` | `1` |  | `Integer` | `6` | `R` | Clear Street provided account id |
-| `BehalfOfAccountID` | `109` |  | `Integer` | `6` | `O` | Clear Street provided account ID if this trade is on behalf of another account |
-| `BranchOffice` | `9003` |  | `String` |  | `O` | Branch office for this trade |
-| `TradeID` | `17` |  | `String` |  | `R` | Unique Trade ID for this trade. Must be unique across days |
-| `CancelTradeID` | `9009` |  | `String` |  | `CR` | Original trade ID to cancel; Required for all Cancel trades |
-| `TradeDate` | `75` |  | `Integer` | `8` | `R` | Trade Date in `YYYYMMDD` format |
-| `Instrument Identifier Type` | `22` | `1` `2` `4` `8` | `Integer` | `1` | `CR` | `1-CUSIP 2-SEDOL 4-ISIN 8-TICKER` Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `8` |
-| `Instrument Identifier` | `48` |  | `String` |  | `CR` | Instrument Identifier based on tag 22 Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `AAPL` |
-| `Security Type` | `167` | | `String` | | `CR` | Indicates type of security. Required for Options where tags 22 or 48 are not provided. | `OPT` |
-| `Symbol` | `55` | | `String` | `6` | `CR` | Ticker symbol. Required for Options where tags 22 or 48 are not provided. | `SPY` |
-| `Maturity Month Year` | `200` | | `Integer` | `6` | `CR` | Month and year of the maturity for an Option. Maturity Month Year in format `YYYYMM`. Required for Options where tags 22 or 48 are not provided. | `202107` |
-| `Put Or Call` | `201` | `0` `1` | `Integer` | `1` | `CR` | Indicates whether an Option is for a put or a call `0 = Put` `1 = Call` Required for Options where tags 22 or 48 are not provided. | `1` |
-| `Strike Price` | `202` | | `Decimal` | `8` | `CR` | Strike Price for an Option. Required for Options where tags 22 or 48 are not provided. | `100.50` |
-| `Maturity Day` | `205` | | `Integer` | `2` | `CR` | To be used in conjunction with Maturity Month Year `200` to specify a particular maturity date for an Option. Required for Options where tags 22 or 48 are not provided. | `30` | 
-| `InstrumentCountry` | `421` |  | `String` | `3` | `R` | ISO 3166 alpha-3 country code where the instrument trades |
-| `InstrumentCurrency` | `15` |  | `String` | `3` | `R` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `Price` | `31` |  | `Decimal` |  | `R` | The price of the trade |
-| `Quantity` | `32` |  | `Decimal` |  | `R` | The quantity of the trade (supports fractional quantities) |
-| `RegisteredRep` | `9002` |  | `String` |  | `O` | Registered rep on this trade |
-| `Side` | `54` | `1` `2` `5` `6` | `Integer` | `1` | `R` | `1-Buy` `2-Sell` `5-Sell Short` `6-Sell Exempt` |
-| `PositionType` | `77` | `C` `O` | `String` | `1` | `O` | `C-Close` `O-Open` |
-| `SettlementCurrency` | `120` |  | `String` | `3` | `O` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `SettlementDateType` | `63` | `0` `7` | `Integer` | `1` | `R` | `0-Regular` `7-When_Issued` |
-| `SettlementDate` | `64` |  | `Integer` | `8` | `CR` | Defaults to 99991231 for when issued trades and not required for when issued trades. Settlement date in `YYYYMMDD` format |
-| `Solicited` | `325` | `F` `T` | `String` | `1` | `O` | `F-Solicited` `T-Not Solicited` |
-| `TradeExecutionTime` | `60` |  | `UTCTimestamp` |  | `R` | Timestamp of when the trade occurred in YYYYMMDD-HH:MM:SS.sss |
-| `Capacity` | `47` | `A` `M` `P` `R` | `String` | `1` | `R` | `A-Agency` `M-Mixed` `P-Principal` `R-Riskless Principal` |
-| `ExecutingMPID` | `76` |  | `String` | `4` | `R` | Executing party's MPID |
-| `ContraSideQualifier` | `9004` | `5` `6` | `Integer` |  | `CR` | `5-Sell Short` `6-Sell Exempt` |
-| `MIC` | `30` |  | `String` | `4` | `R` | ISO 10383 Market Identifer Code for the exchange |
-| `Commission` | `12` |  | `Decimal` |  | `O` | Commission charged or paid |
-| `OmitSECFee` | `9005` | `F` `T` | `String` | `1` | `O` | True if SEC fees should not be applied |
-| `OmitTAFFee` | `9006` | `F` `T` | `String` | `1` | `O` | True if TAF fees should not be applied |
-| `LocateID` | `9007` |  | `String` |  | `CR` | Locate ID obtained for a short sale; Required for Sell Short |
-| `LocateSource` | `9008` |  | `String` |  | `CR` | Firm supplying the locate (usually MPID); Required for Sell Short |
-| `OrderID` | `37` |  | `String` |  | `O` | Order ID to link all the executions in the average price account |
-| `LastLiquidityInd` | `851` | `1` `2` `3` `4` | `Integer` |  | `O` | `1 - Added Liquidity` `2 - Removed Liquidity` `3 - Liquidity Routed Out` `4 - Netted Liquidity` | `1` |
 
-## Transfer Trade
-
+# Reject
 ```
-8=FIX.4.29=25335=849=OMS_CLIENT56=0000913234=12914252=20201021-21:42:34
-20=09001=T1=10007817=CLIENT_TRADE_ID75=2020102122=448=US70450Y1038
-421=USA15=USD31=000213.48000032=0000000298754=263=064=20201023
-60=20201021-13:42:34.12347=P76=ABCD79=10001710=180
+8=FIX.4.29=5935=334=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC45=1234569158=Order rejected. Missing Security ID10=025
 ```
+`Reject` is sent by Clear Street where there are any issues with the request messages. 
 
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | 3 | Message type | 3 | AlphaNumeric | 1 | Required |
+| RefSeqNum | 45 |  | Reference message sequence number | 123456789 | Numeric |  | Required |
+| Text | 58 |  | Reason for reject | Order rejected. Missing field ClOrdID | AlphaNumeric |  | Required |
+
+
+# Quote Request
 ```
-BeginString 8=FIX.4.2
-BodyLength9=261
-MsgType35=8
-SenderCompID49=OMS_CLIENT
-TargetCompID56=CLST
-MsgSeqNum34=129145
-SendingTime52=20201021-21:42:34
-ExecutionTransactionType20=0
-TradeType9001=T
-AccountID1=100078
-ClientTradeID17=CLIENT_TRADE_ID
-TradeDate75=20201021
-InstrumentIdentifierType22=4
-InstrumentIdentifier 48=US70450Y1038
-InstrumentCountry421=USA
-InstrumentCurrency15=USD
-Price31=000213.480000
-Quantity32=00000002987
-Side54=2
-SettlementDateType63=0
-SettlmenetDate64=20201023
-TradeExecutionTime60=20201021-13:42:34.123
-Capacity47=P
-ExecutingMPID 76=WXYZ
-TargetAccountID 79=100017
-Checksum10=180
+8=FIX.4.29=005435=R49=OMSC56=CLSTLOCT34=136052=20220208-21:10:01131=123456783146=2115=ACCOUNTID109=ACCOUNTID55=IBM38=100054=155=AAPL38=200054=110=106
 ```
+`Quote Request` is a request sent by OMS for locating multiple securities. Please note that repeatable fields must follow the same order mentioned in this document.
 
-This trade type is to facilitate trade movement between Clear Street internal accounts. For example, trade movement from a proprietary account to an average price account.
-
-| Name | FIX Tag | Allowable Values | Type | Length | Required? | Description |
-| - | - | - | - | - | - | - |
-| `ExecutionTransactionType` | `20` | `0` `1` | `Integer` | `1` | `R` | `0-New` `1-Cancel` |
-| `TradeType` | `9001` | `T` | `String` | `1` | `R` | `T-Transfer` |
-| `AccountID` | `1` |  | `Integer` | `6` | `R` | Clear Street provided account id |
-| `BehalfOfAccountID` | `109` |  | `Integer` | `6` | `O` | Clear Street provided account ID if this trade is on behalf of another account |
-| `BranchOffice` | `9003` |  | `String` |  | `O` | Branch office for this trade |
-| `TradeID` | `17` |  | `String` |  | `R` | Unique Trade ID for this trade. Must be unique across days |
-| `CancelTradeID` | `9009` |  | `String` |  | `CR` | Original trade ID to cancel; Required for all Cancel trades |
-| `TradeDate` | `75` |  | `Integer` | `8` | `R` | Trade Date in `YYYYMMDD` format |
-| `Instrument Identifier Type` | `22` | `1` `2` `4` `8` | `Integer` | `1` | `CR` | `1-CUSIP 2-SEDOL 4-ISIN 8-TICKER` Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `8` |
-| `Instrument Identifier` | `48` |  | `String` |  | `CR` | Instrument Identifier based on tag 22 Required unless the instrument is an Option and tags 167, 55, 200, 201, 202, and 205 are provided. | `AAPL` |
-| `Security Type` | `167` | | `String` | | `CR` | Indicates type of security. Required for Options where tags 22 or 48 are not provided. | `OPT` |
-| `Symbol` | `55` | | `String` | `6` | `CR` | Ticker symbol. Required for Options where tags 22 or 48 are not provided. | `SPY` |
-| `Maturity Month Year` | `200` | | `Integer` | `6` | `CR` | Month and year of the maturity for an Option. Maturity Month Year in format `YYYYMM`. Required for Options where tags 22 or 48 are not provided. | `202107` |
-| `Put Or Call` | `201` | `0` `1` | `Integer` | `1` | `CR` | Indicates whether an Option is for a put or a call `0 = Put` `1 = Call` Required for Options where tags 22 or 48 are not provided. | `1` |
-| `Strike Price` | `202` | | `Decimal` | `8` | `CR` | Strike Price for an Option. Required for Options where tags 22 or 48 are not provided. | `100.50` |
-| `Maturity Day` | `205` | | `Integer` | `2` | `CR` | To be used in conjunction with Maturity Month Year `200` to specify a particular maturity date for an Option. Required for Options where tags 22 or 48 are not provided. | `30` | 
-| `InstrumentCountry` | `421` |  | `String` | `3` | `R` | ISO 3166 alpha-3 country code where the instrument trades |
-| `InstrumentCurrency` | `15` |  | `String` | `3` | `R` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `Price` | `31` |  | `Decimal` |  | `R` | The price of the trade |
-| `Quantity` | `32` |  | `Decimal` |  | `R` | The quantity of the trade (supports fractional quantities) |
-| `RegisteredRep` | `9002` |  | `String` |  | `O` | Registered rep on this trade |
-| `Side` | `54` | `1` `2` `5` `6` | `Integer` | `1` | `R` | `1-Buy` `2-Sell` `5-Sell Short` `6-Sell Exempt` |
-| `PositionType` | `77` | `C` `O` | `String` | `1` | `O` | `C-Close` `O-Open` |
-| `SettlementCurrency` | `120` |  | `String` | `3` | `O` | ISO 4217 alpha-3 currency code in which the instrument trades |
-| `SettlementDateType` | `63` | `0` `7` | `Integer` | `1` | `R` | `0-Regular` `7-When_Issued` |
-| `SettlementDate` | `64` |  | `Integer` | `8` | `CR` | Defaults to 99991231 for when issued trades and not required for when issued trades. Settlement date in `YYYYMMDD` format |
-| `Solicited` | `325` | `F` `T` | `String` | `1` | `O` | `F-Solicited` `T-Not Solicited` |
-| `TradeExecutionTime` | `60` |  | `UTCTimestamp` |  | `R` | Timestamp of when the trade occurred in YYYYMMDD-HH:MM:SS.sss |
-| `Capacity` | `47` | `A` `M` `P` `R` | `String` | `1` | `R` | `A-Agency` `M-Mixed` `P-Principal` `R-Riskless Principal` |
-| `ContraSideQualifier` | `9004` | `5` `6` | `Integer` |  | `CR` | `5-Sell Short` `6-Sell Exempt` |
-| `Commission` | `12` |  | `Decimal` |  | `O` | Commission charged or paid |
-| `TargetAccountID` | `79` |  | `Integer` |  | `R` | Clear Street provided account ID  |
-| `OmitSECFee` | `9005` | `F` `T` | `String` | `1` | `O` | True if SEC fees should not be applied |
-| `OmitTAFFee` | `9006` | `F` `T` | `String` | `1` | `O` | True if TAF fees should not be applied |
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required | Repeatable |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Message Type | 35 | Required | Message type | Required | AlphaNumeric | 1 | Required | No |
+| QuoteReqID | 131 |  | Unique ID for the Quote | A12345bc | AlphaNumeric |  | Required | No |
+| OnBehalfOfCompID | 115 |  | On behalf of company ID<br/> Same as Firm ID/MPID | CLST | AlphaNumeric |  | Required | No |
+| ClientID | 109 |  | Firm ID/MPID | CLST | AlphaNumeric |  | Required | No |
+| NoRelatedSym | 146 |  | Number of related symbols in this order | 1 | Numeric |  | Required | No |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required | Yes |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required | Yes |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required | Yes |
+| OrderQty | 38 |  | Number of shares for which quote is being requested | 1000 | Numeric |  | Required | Yes |
+| Side | 54 | 1-Buy | Side of Quote | 1 | Numeric | 1 | Optional | Yes |
 
 
-# FIX Outbound (Response) Specification
+# Quote
+```
+8=FIX.4.29=5935=S34=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC131=123456783115=ACCOUNTID109=ACCOUNTID117=10000155=IBM135=1000133=0.2310=025
+```
+`Quote` is a response sent by Clear Street as a reply to Quote Request message with Locate ID.
+There will be one response message for each of the securities requested as part of `Quote Request`. 
 
-| Name             | FIX Tag | Allowable Values | Type       | Description                                 | Example           |
-| ---------------- | ------- | ---------------- | ---------- | ------------------------------------------- | ----------------- |
-| `Trade Details` |  |  |  | FIX message received from OMS |  |
-| `Response` | `9011` |  | `String` | ACK or NACK with reason | `accepted` |
+| Field Name | FIX Tag # | Possible Values | Comments | Example | Format | Length | Required |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| MsgType | 35 | S | Message type | S | AlphaNumeric | 1 | Required |
+| QuoteReqID | 131 |  | Unique ID from the Quote Request ReferenceId |  | AlphaNumeric |  | Required |
+| OnBehalfOfCompID | 115 |  | On behalf of company ID<br/> Filled with same information from Quote Request message account_id | CLST | AlphaNumeric |  | Optional |
+| ClientID | 109 |  | Firm ID/MPID | CLST | AlphaNumeric |  | Required |
+| QuoteID | 117 |  | Unique ID for this quote locate_id |  | AlphaNumeric |  | Required |
+| Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
+| IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
+| SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required |
+| OfferSize | 135 |  | Number of shares that can be offered<br/>If availability is less the OrderQty then availability<br/>If availability is more than OrderQty then OrderQty<br/>1 if no OrderQty is specified and available<br/>0 if no OrderQty is specified and not available | 1000 | Numeric |  | Required |
+| OfferPx | 133 |  | Offer price for the security requested | 0.23 | Numeric |  | Required |
