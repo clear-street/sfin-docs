@@ -327,11 +327,9 @@
 <p>The Clear Street Locates service enables users to request Short Stock Locates via a ReST API. This specification documents the service endpoints and the interaction pattern for this API.</p>
 <h1 id='authentication'>Authentication</h1>
 <p>Users will be authenticated using OAuth. Contact us at api-support@clearstreet.io for more details.</p>
-<h1 id='api'>API</h1><h2 id='new-short-stock-locate-request'>New Short Stock Locate Request</h2>
-<p>POST - /sfin/v1/locates
-<code>
-POST - /sfin/v1/locates
-</code></p>
+<h1 id='api'>API</h1><h2 id='new-short-stock-locate-request'>New Short Stock Locate Request</h2><div class="highlight"><pre class="highlight plaintext"><code>POST - /sfin/v1/locates
+</code></pre></div>
+<p>POST - /sfin/v1/locates</p>
 
 <p>Request for a locate of a given security.</p>
 <h3 id='request-object'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Request
@@ -433,11 +431,9 @@ POST - /sfin/v1/locates
 <p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
 
 <p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-status-update-request'>Locate Order Status Update Request</h2>
-<p>PUT - /sfin/v1/locates
-<code>
-PUT - /sfin/v1/locates
-</code></p>
+<h2 id='locate-order-status-update-request'>Locate Order Status Update Request</h2><div class="highlight"><pre class="highlight plaintext"><code>PUT - /sfin/v1/locates
+</code></pre></div>
+<p>PUT - /sfin/v1/locates</p>
 
 <p>Request to accpet/decline a Locate that was offered by Clear Street.</p>
 <h3 id='request-object-2'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Update Status Request
@@ -519,11 +515,9 @@ PUT - /sfin/v1/locates
 <p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
 
 <p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-list-request'>Locate Order List Request</h2>
-<p>GET - /sfin/v1/locates
-<code>
-GET - /sfin/v1/locates
-</code></p>
+<h2 id='locate-order-list-request'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /sfin/v1/locates
+</code></pre></div>
+<p>GET - /sfin/v1/locates</p>
 
 <p>Request for a list of Locates along with their status</p>
 <h3 id='request-object-3'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Request
