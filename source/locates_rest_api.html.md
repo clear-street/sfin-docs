@@ -17,11 +17,10 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 # API
 
 ## New Short Stock Locate Request
-
-POST - /sfin/v1/locates
 ```
 POST - /sfin/v1/locates
 ```
+POST - /sfin/v1/locates
 
 Request for a locate of a given security.
 
@@ -133,11 +132,10 @@ Request for a locate of a given security.
 `located_time` - Time security was located
 
 ## Locate Order Status Update Request
-
-PUT - /sfin/v1/locates
 ```
 PUT - /sfin/v1/locates
 ```
+PUT - /sfin/v1/locates
 
 Request to accpet/decline a Locate that was offered by Clear Street.
 
@@ -229,11 +227,10 @@ Request to accpet/decline a Locate that was offered by Clear Street.
 `located_time` - Time security was located
 
 ## Locate Order List Request
-
-GET - /sfin/v1/locates
 ```
 GET - /sfin/v1/locates
 ```
+GET - /sfin/v1/locates
 
 Request for a list of Locates along with their status
 
