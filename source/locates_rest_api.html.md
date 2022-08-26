@@ -148,7 +148,7 @@ Request to get Locate order status that was submitted as part of New Short Stock
 
 ### Response Object
 ```
-// Locate Order Status Response
+// Locate Order Status Response when Offered
 {
       "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
       "locate_id": "19dd51b8a64d953955c5c202",
@@ -165,8 +165,21 @@ Request to get Locate order status that was submitted as part of New Short Stock
       "cents_per_share": 0.01,
       "currency": "USD",
       "total_cost": 10.00,
-      "status": "FILLED",
+      "status": "OFFERED",
       "located_time": "20220711-18:40:42"
+}
+
+// Locate Order Status Response when Pending
+{
+      "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
+      "reference_id": "a2022071300001",
+      "trader_account": "100000",
+      "mpid": "CPST",
+      "request_time": "20220711-18:40:40",
+      "security_id_type": "TICKER",
+      "security_id": “TSLA”,
+      "requested_quantity": 1000,
+      "status": "PENDING",
 }
 ```
 `clst_reference_id` - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)
