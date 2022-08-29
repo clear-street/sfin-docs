@@ -17,23 +17,31 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 # API Endpoints
 
 ## New Short Stock Locate Request
-POST - /locates
+`POST - /locates`
+
 1. Client requests for a new short stock locate 
+
 2. Clear Street responds with `reference id` and status of `PENDING`
 
 ## Locate Order Status Request
-GET - /locates/status
+`GET - /locates/status`
+
 1. Client makes a call for status request using the `reference id` from above response 
+
 2. Clear Street responds with updated status of the short stock locate. If `OFFERED`, a `locate id` would be provided along with updated status
 
 ## Locate Order Status Update Request
-PUT - /locates
+`PUT - /locates`
+
 1. Client requests to `ACCEPT`/`DECLINE` a locate offer
+
 2. Clear Street responds with updated status
 
 ## Locate Order List Request
-GET - /locates
+`GET - /locates`
+
 1. Client requests for a list of locates with a filter criteria
+
 2. Clear Stree responds with a list of locates for the given criteria
 
 # API Details
@@ -262,11 +270,10 @@ Request to accept/decline a Locate that was offered by Clear Street.
             "request_time": "20220711-18:40:40",
             "security_id_type": "TICKER",
             "security_id": "TSLA",
-            "listing_country": "US",
             "requested_quantity": 1000,
             "trader_comment": "A request for locate of 1000 TSLA shares",
             "located_quantity": 1000,
-            "desk_comment": "Offer for locate of 1000 TSLA shares",
+            "desk_comment": "Offer filled for locate of 1000 TSLA shares",
             "cents_per_share": 0.010,
             "currency": "USD",
             "total_cost": 10.00,
@@ -290,8 +297,6 @@ Request to accept/decline a Locate that was offered by Clear Street.
 `security_id_type` - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER
 
 `security_id` - Security identifier corresponding to the security type above for the locate
-
-`listing_country` - Listing country of the security
 
 `requested_quantity` - Quantity requested for the locate
 
@@ -367,11 +372,10 @@ Request for a list of Locates along with their status
             "request_time": "20220711-18:40:40",
             "security_id_type": "TICKER",
             "security_id": "TSLA",
-            "listing_country": "US",
             "requested_quantity": 1000,
             "trader_comment": "A request for locate of 1000 TSLA shares",
             "located_quantity": 1000,
-            "desk_comment": "Offer for locate of 1000 TSLA shares",
+            "desk_comment": "Offer filled for locate of 1000 TSLA shares",
             "cents_per_share": 0.01,
             "currency": "USD",
             "total_cost": 10.00,
@@ -398,8 +402,6 @@ Request for a list of Locates along with their status
 `security_id_type` - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER
 
 `security_id` - Security identifier corresponding to the security type above for the locate
-
-`listing_country` - Listing country of the security
 
 `requested_quantity` - Quantity requested for the locate
 
