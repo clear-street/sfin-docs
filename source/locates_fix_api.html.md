@@ -192,7 +192,7 @@ There will be one response message for each item if the response is for a list o
 
 ## Reject
 ```
-8=FIX.4.29=5935=334=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC45=1234569158=Order rejected. Missing Security ID10=025
+8=FIX.4.29=5935=334=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC45=12345691371=158=Order rejected. Missing Account10=025
 ```
 
 `Reject` is sent by Clear Street where there are any issues with the request messages. 
@@ -202,7 +202,7 @@ There will be one response message for each item if the response is for a list o
 | MsgType | 35 | 3 | Message type | 3 | AlphaNumeric | 1 | Required |
 | RefSeqNum | 45 |  | Reference message sequence number | 123456789 | Numeric |  | Required |
 | Text | 58 |  | Reason for reject | Order rejected. Missing field ClOrdID | AlphaNumeric |  | Required |
-
+| RefTagID | 371 |  | The tag number of the FIX field being referenced | 1 | Numeric |  | Optional |
 
 # Legacy Message Flow 
 This flow will be decommissioned in the future once all existing OMSs migrate to the preferred message flow above.
@@ -409,7 +409,7 @@ There will be one response message for each item if the response is for a list o
 
 ## Reject
 ```
-8=FIX.4.29=5935=334=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC45=1234569158=Order rejected. Missing Security ID10=025
+8=FIX.4.29=5935=334=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC45=12345691371=158=Order rejected. Missing Account10=025
 ```
 
 `Reject` is sent by Clear Street where there are any issues with the request messages. 
@@ -419,4 +419,4 @@ There will be one response message for each item if the response is for a list o
 | MsgType | 35 | 3 | Message type | 3 | AlphaNumeric | 1 | Required |
 | RefSeqNum | 45 |  | Reference message sequence number | 123456789 | Numeric |  | Required |
 | Text | 58 |  | Reason for reject | Order rejected. Missing field ClOrdID | AlphaNumeric |  | Required |
-
+| RefTagID | 371 |  | The tag number of the FIX field being referenced | 1 | Numeric |  | Optional |
