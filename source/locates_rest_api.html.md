@@ -42,7 +42,7 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 
 1. Client requests for a list of locates with a filter criteria
 
-2. Clear Stree responds with a list of locates for the given criteria
+2. Clear Street responds with a list of locates for the given criteria
 
 # API Details
 
@@ -50,7 +50,7 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 ```
 POST - /locates
 ```
-POST - /locates
+`POST - /locates`
 
 Request for a new short stock locate
 
@@ -135,7 +135,7 @@ Request for a new short stock locate
 ```
 GET - /locates/status
 ```
-GET - /locates/status
+`GET - /locates/status`
 
 Request to get Locate order status that was submitted as part of New Short Stock Locate Request. This endpoint will return a locate id after a locate is offered.
 
@@ -228,7 +228,7 @@ Request to get Locate order status that was submitted as part of New Short Stock
 ```
 PUT - /locates
 ```
-PUT - /locates
+`PUT - /locates`
 
 Request to accept/decline a Locate that was offered by Clear Street.
 
@@ -320,7 +320,7 @@ Request to accept/decline a Locate that was offered by Clear Street.
 ```
 GET - /locates
 ```
-GET - /locates
+`GET - /locates`
 
 Request for a list of Locates along with their status
 
