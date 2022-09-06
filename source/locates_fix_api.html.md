@@ -202,7 +202,7 @@ There will be one response message for each item if the response is for a list o
 | MsgType | 35 | 3 | Message type | 3 | AlphaNumeric | 1 | Required |
 | RefSeqNum | 45 |  | Reference message sequence number | 123456789 | Numeric |  | Required |
 | Text | 58 |  | Reason for reject | Order rejected. Missing field ClOrdID | AlphaNumeric |  | Required |
-
+| RefTagID | 371 |  | The tag number of the FIX field being referenced | 1 | Numeric |  | Optional |
 
 # Legacy Message Flow 
 This flow will be decommissioned in the future once all existing OMSs migrate to the preferred message flow above.
@@ -419,4 +419,5 @@ There will be one response message for each item if the response is for a list o
 | MsgType | 35 | 3 | Message type | 3 | AlphaNumeric | 1 | Required |
 | RefSeqNum | 45 |  | Reference message sequence number | 123456789 | Numeric |  | Required |
 | Text | 58 |  | Reason for reject | Order rejected. Missing field ClOrdID | AlphaNumeric |  | Required |
+| RefTagID | 371 |  | The tag number of the FIX field being referenced | 1 | Numeric |  | Optional |
 
