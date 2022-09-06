@@ -373,11 +373,11 @@
 
 <ol>
 <li><p>Client requests for a list of locates with a filter criteria</p></li>
-<li><p>Clear Stree responds with a list of locates for the given criteria</p></li>
+<li><p>Clear Street responds with a list of locates for the given criteria</p></li>
 </ol>
 <h1 id='api-details'>API Details</h1><h2 id='new-short-stock-locate-request-2'>New Short Stock Locate Request</h2><div class="highlight"><pre class="highlight plaintext"><code>POST - /locates
 </code></pre></div>
-<p>POST - /locates</p>
+<p><code>POST - /locates</code></p>
 
 <p>Request for a new short stock locate</p>
 <h3 id='request-object'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Request
@@ -451,7 +451,7 @@
 <p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
 <h2 id='locate-order-status-request-2'>Locate Order Status Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates/status
 </code></pre></div>
-<p>GET - /locates/status</p>
+<p><code>GET - /locates/status</code></p>
 
 <p>Request to get Locate order status that was submitted as part of New Short Stock Locate Request. This endpoint will return a locate id after a locate is offered.</p>
 <h3 id='request-object-2'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Request
@@ -535,7 +535,7 @@
 <p><code>located_time</code> - Time security was located</p>
 <h2 id='locate-order-status-update-request-2'>Locate Order Status Update Request</h2><div class="highlight"><pre class="highlight plaintext"><code>PUT - /locates
 </code></pre></div>
-<p>PUT - /locates</p>
+<p><code>PUT - /locates</code></p>
 
 <p>Request to accept/decline a Locate that was offered by Clear Street.</p>
 <h3 id='request-object-3'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Update Status Request
@@ -616,7 +616,7 @@
 <p><code>located_time</code> - Time security was located</p>
 <h2 id='locate-order-list-request-2'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates
 </code></pre></div>
-<p>GET - /locates</p>
+<p><code>GET - /locates</code></p>
 
 <p>Request for a list of Locates along with their status</p>
 <h3 id='request-object-4'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Request
