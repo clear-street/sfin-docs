@@ -39,7 +39,9 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 }
 ```
 `accessToken` - JSON web token
+
 `expiresIn` - Expiration time in seconds
+
 `tokenType` - Type of token
 
 # API Endpoints
