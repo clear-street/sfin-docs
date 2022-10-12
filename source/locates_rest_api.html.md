@@ -54,7 +54,7 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 2. Clear Street responds with `reference id` and status of `PENDING`
 
 ## Locate Order Status Request
-`GET - /locates/status`
+`GET - /locates`
 
 1. Client makes a call for status request using the `reference id` from above response 
 
@@ -251,15 +251,8 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 
 `located_time` - Time security was located
 
-## Locate Order Status Update Request (Multiple)
-```
-PATCH - /locates
-```
-`PATCH - /locates`
-
-Request to accept/decline a Locate that was offered by Clear Street.
-
-## Locate Order Status Update Request (Single)
+## Locate Order Status Update Request 
+### Single Update
 ```
 PATCH - /locates/19dd51b8a64d953955c5c202/ACCEPT
 PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
@@ -267,6 +260,14 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 `PATCH - /locates/:locate_id/:status`
 
 Request to accept/decline a Locate that was offered by Clear Street.
+
+### Multiple Updates
+```
+PATCH - /locates
+```
+`PATCH - /locates`
+
+Request to accept/decline multiple Locates that were offered by Clear Street.
 
 ### Request Object
 ```
@@ -356,7 +357,7 @@ Request to accept/decline a Locate that was offered by Clear Street.
 ```
 GET - /locates?reference_id=a2022071300001&security_id=TSLA
 ```
-`GET - /locates
+`GET - /locates`
 
 Request for a list of Locates along with their status
 
