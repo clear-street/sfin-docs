@@ -35,10 +35,10 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 {
     "accessToken": "xxxxx.yyyyy.zzzzz",
     "expiresIn": 600,
-    "tokenType": "Bearer (constant)"
+    "tokenType": "Bearer"
 }
 ```
-`accessToken` - JASON web token
+`accessToken` - JSON web token
 `expiresIn` - Expiration time in seconds
 `tokenType` - Type of token
 
@@ -161,23 +161,23 @@ Request for a new short stock locate
 
 ## Locate Order Status Request
 ```
-GET - /locates/status
+GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e/status
 ```
-`GET - /locates/status/:clst_reference_id/:trader_account/:mpid`
+`GET - /locates/:clst_reference_id/status`
 
 Request to get Locate order status that was submitted as part of New Short Stock Locate Request. This endpoint will return a locate id after a locate is offered.
 
 ### Request Parameters
 ```
 // Locate Order Status Parameters
-GET - /locates/status/2af0305ffa5b4c91ba4e7ab45e2d8e4e/100000/CPST
+GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e/status
 ```
 
 `clst_reference_id` - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)
 
-`trader_account` - An account provided by Clear Street
+`trader_account` - An optional account provided by Clear Street
 
-`mpid` - Market Participant Identifier, assigned by Clear Street
+`mpid` - Optional Market Participant Identifier, assigned by Clear Street
 
 ### Response Object
 ```
@@ -259,10 +259,10 @@ Request to accept/decline a Locate that was offered by Clear Street.
 
 ## Locate Order Status Update Request (Single)
 ```
-PATCH - /locates/19dd51b8a64d953955c5c202/100000/CPST/ACCEPT
-PATCH - /locates/19dd51b8a64d953955c5c202/100000/CPST/DECLINE
+PATCH - /locates/19dd51b8a64d953955c5c202/ACCEPT
+PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 ```
-`PATCH - /locates/:locate_id/:trader_account/:mpid/:status`
+`PATCH - /locates/:locate_id/:status`
 
 Request to accept/decline a Locate that was offered by Clear Street.
 
@@ -287,9 +287,9 @@ Request to accept/decline a Locate that was offered by Clear Street.
 
 `status` - Status of the locate request. Valid values for this field are: ACCEPT, DECLINE
 
-`trader_account` - An account provided by Clear Street
+`trader_account` - An optional account provided by Clear Street
 
-`mpid` - Market Participant Identifier, assigned by Clear Street
+`mpid` - Optional Market Participant Identifier, assigned by Clear Street
 
 ### Response Object
 ```
@@ -352,9 +352,9 @@ Request to accept/decline a Locate that was offered by Clear Street.
 
 ## Locate Order List Request
 ```
-GET - /locates/100000/CPST?locate_id=19dd51b8a64d953955c5c202&security_id=TSLA
+GET - /locates?reference_id=a2022071300001&security_id=TSLA
 ```
-`GET - /locates/:trader_account/:mpid`
+`GET - /locates
 
 Request for a list of Locates along with their status
 
@@ -362,9 +362,9 @@ Request for a list of Locates along with their status
 ```
 // List Locate Orders Request Parameters
 {
+    // Optional Fields 
     "trader_account": "100000",
     "mpid": "CPST",
-    // Optional Fields 
     "page_size": 1,
     "page_token": "",
     "locate_id": "19dd51b8a64d953955c5c202",
@@ -379,9 +379,9 @@ Request for a list of Locates along with their status
 
 `page_token` - Token from the previous response for this request. Empty will bring the first batch of locates. 
 
-`trader_account` - An account provided by Clear Street
+`trader_account` - An optional account provided by Clear Street
 
-`mpid` - Market Participant Identifier, assigned by Clear Street
+`mpid` - Optional Market Participant Identifier, assigned by Clear Street
 
 `locate_id` - A unique locate id for the request
 
