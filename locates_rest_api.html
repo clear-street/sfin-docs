@@ -303,6 +303,14 @@
           </li>
           <li>
             <a href="#authentication" class="toc-h1 toc-link" data-title="Authentication">Authentication</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#request-object" class="toc-h2 toc-link" data-title="Request Object">Request Object</a>
+                  </li>
+                  <li>
+                    <a href="#response-object" class="toc-h2 toc-link" data-title="Response Object">Response Object</a>
+                  </li>
+              </ul>
           </li>
           <li>
             <a href="#api-endpoints" class="toc-h1 toc-link" data-title="API Endpoints">API Endpoints</a>
@@ -331,7 +339,10 @@
                     <a href="#locate-order-status-request-2" class="toc-h2 toc-link" data-title="Locate Order Status Request">Locate Order Status Request</a>
                   </li>
                   <li>
-                    <a href="#locate-order-status-update-request-2" class="toc-h2 toc-link" data-title="Locate Order Status Update Request">Locate Order Status Update Request</a>
+                    <a href="#locate-order-status-update-request-multiple" class="toc-h2 toc-link" data-title="Locate Order Status Update Request (Multiple)">Locate Order Status Update Request (Multiple)</a>
+                  </li>
+                  <li>
+                    <a href="#locate-order-status-update-request-single" class="toc-h2 toc-link" data-title="Locate Order Status Update Request (Single)">Locate Order Status Update Request (Single)</a>
                   </li>
                   <li>
                     <a href="#locate-order-list-request-2" class="toc-h2 toc-link" data-title="Locate Order List Request">Locate Order List Request</a>
@@ -345,8 +356,29 @@
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
 <p>The Clear Street Locates service enables users to request Short Stock Locates via a ReST API. This specification documents the service endpoints and the interaction pattern for this API.</p>
-<h1 id='authentication'>Authentication</h1>
+<h1 id='authentication'>Authentication</h1><div class="highlight"><pre class="highlight plaintext"><code>POST - /auth
+</code></pre></div>
+<p><code>POST - /auth</code></p>
+
 <p>Users will be authenticated using OAuth. Contact us at api-support@clearstreet.io for more details.</p>
+<h3 id='request-object'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Auth Request
+{
+    "apiKey": "abcdefghijklmnopqrstuvwxyz123456"
+}
+</code></pre></div>
+<p><code>apiKey</code> - Issued by Clear Street</p>
+<h3 id='response-object'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Auth Response
+{
+    "accessToken": "xxxxx.yyyyy.zzzzz",
+    "expiresIn": 600,
+    "tokenType": "Bearer"
+}
+</code></pre></div>
+<p><code>accessToken</code> - JSON web token</p>
+
+<p><code>expiresIn</code> - Expiration time in seconds</p>
+
+<p><code>tokenType</code> - Type of token</p>
 <h1 id='api-endpoints'>API Endpoints</h1><h2 id='new-short-stock-locate-request'>New Short Stock Locate Request</h2>
 <p><code>POST - /locates</code></p>
 
@@ -362,7 +394,7 @@
 <li><p>Clear Street responds with updated status of the short stock locate. If <code>OFFERED</code>, a <code>locate id</code> would be provided along with updated status</p></li>
 </ol>
 <h2 id='locate-order-status-update-request'>Locate Order Status Update Request</h2>
-<p><code>PUT - /locates</code></p>
+<p><code>PATCH - /locates</code></p>
 
 <ol>
 <li><p>Client requests to <code>ACCEPT</code>/<code>DECLINE</code> a locate offer</p></li>
@@ -380,7 +412,7 @@
 <p><code>POST - /locates</code></p>
 
 <p>Request for a new short stock locate</p>
-<h3 id='request-object'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Request
+<h3 id='request-object-2'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Request
 {
     "reference_id": "a2022071300001",
     "trader_account": "100000",
@@ -413,7 +445,7 @@
 <p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
 
 <p><code>requested_quantity</code> - Quantity requested for the locate</p>
-<h3 id='response-object'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Response
+<h3 id='response-object-2'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Response
 {
     "reference_id": "a2022071300001",
     "trader_account": "100000",
@@ -449,24 +481,20 @@
 <p><code>requested_quantity</code> - Quantity requested for the locate</p>
 
 <p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
-<h2 id='locate-order-status-request-2'>Locate Order Status Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates/status
+<h2 id='locate-order-status-request-2'>Locate Order Status Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 </code></pre></div>
-<p><code>GET - /locates/status</code></p>
+<p><code>GET - /locates/:clst_reference_id</code></p>
 
 <p>Request to get Locate order status that was submitted as part of New Short Stock Locate Request. This endpoint will return a locate id after a locate is offered.</p>
-<h3 id='request-object-2'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Request
-{
-      "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
-      "trader_account": "100000",
-      "mpid": "CPST",
-}
+<h3 id='request-parameters'>Request Parameters</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Parameters
+GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 </code></pre></div>
 <p><code>clst_reference_id</code> - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)</p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>trader_account</code> - An optional account provided by Clear Street</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
-<h3 id='response-object-2'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response when Offered
+<p><code>mpid</code> - Optional Market Participant Identifier, assigned by Clear Street</p>
+<h3 id='response-object-3'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response when Offered
 {
       "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
       "locate_id": "19dd51b8a64d953955c5c202",
@@ -533,9 +561,15 @@
 <p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
 
 <p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-status-update-request-2'>Locate Order Status Update Request</h2><div class="highlight"><pre class="highlight plaintext"><code>PUT - /locates
+<h2 id='locate-order-status-update-request-multiple'>Locate Order Status Update Request (Multiple)</h2><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates
 </code></pre></div>
-<p><code>PUT - /locates</code></p>
+<p><code>PATCH - /locates</code></p>
+
+<p>Request to accept/decline a Locate that was offered by Clear Street.</p>
+<h2 id='locate-order-status-update-request-single'>Locate Order Status Update Request (Single)</h2><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates/19dd51b8a64d953955c5c202/ACCEPT
+PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
+</code></pre></div>
+<p><code>PATCH - /locates/:locate_id/:status</code></p>
 
 <p>Request to accept/decline a Locate that was offered by Clear Street.</p>
 <h3 id='request-object-3'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Update Status Request
@@ -556,10 +590,10 @@
 
 <p><code>status</code> - Status of the locate request. Valid values for this field are: ACCEPT, DECLINE</p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>trader_account</code> - An optional account provided by Clear Street</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
-<h3 id='response-object-3'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response
+<p><code>mpid</code> - Optional Market Participant Identifier, assigned by Clear Street</p>
+<h3 id='response-object-4'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response
 {
     "locates": [
         {
@@ -614,18 +648,18 @@
 <p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
 
 <p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-list-request-2'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates
+<h2 id='locate-order-list-request-2'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates?reference_id=a2022071300001&amp;security_id=TSLA
 </code></pre></div>
-<p><code>GET - /locates</code></p>
+<p>`GET - /locates</p>
 
 <p>Request for a list of Locates along with their status</p>
-<h3 id='request-object-4'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Request
+<h3 id='request-parameters-2'>Request Parameters</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Request Parameters
 {
-    "page_size": 1,
-    "page_token": "",
+    // Optional Fields 
     "trader_account": "100000",
     "mpid": "CPST",
-    // Optional Fields 
+    "page_size": 1,
+    "page_token": "",
     "locate_id": "19dd51b8a64d953955c5c202",
     "reference_id": "a2022071300001",
     "security_id_type": "TICKER",
@@ -637,9 +671,9 @@
 
 <p><code>page_token</code> - Token from the previous response for this request. Empty will bring the first batch of locates. </p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>trader_account</code> - An optional account provided by Clear Street</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
+<p><code>mpid</code> - Optional Market Participant Identifier, assigned by Clear Street</p>
 
 <p><code>locate_id</code> - A unique locate id for the request</p>
 
@@ -650,7 +684,7 @@
 <p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
 
 <p><code>listing_country</code> - Listing country of the security</p>
-<h3 id='response-object-4'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Response
+<h3 id='response-object-5'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Response
 {
     "locates": [
         {
