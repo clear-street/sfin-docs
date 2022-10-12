@@ -163,16 +163,16 @@ Request for a new short stock locate
 
 ## Locate Order Status Request
 ```
-GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e/status
+GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 ```
-`GET - /locates/:clst_reference_id/status`
+`GET - /locates/:clst_reference_id`
 
 Request to get Locate order status that was submitted as part of New Short Stock Locate Request. This endpoint will return a locate id after a locate is offered.
 
 ### Request Parameters
 ```
 // Locate Order Status Parameters
-GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e/status
+GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 ```
 
 `clst_reference_id` - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)
