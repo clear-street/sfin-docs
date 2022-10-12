@@ -12,7 +12,35 @@ search: true
 The Clear Street Locates service enables users to request Short Stock Locates via a ReST API. This specification documents the service endpoints and the interaction pattern for this API.
 
 # Authentication
+```
+POST - /auth
+```
+`POST - /auth`
+
 Users will be authenticated using OAuth. Contact us at api-support@clearstreet.io for more details.
+
+### Request Object
+```
+// Auth Request
+{
+    "apiKey": "abcdefghijklmnopqrstuvwxyz123456"
+}
+```
+
+`apiKey` - Issued by Clear Street
+
+### Response Object
+```
+// Auth Response
+{
+    "accessToken": "xxxxx.yyyyy.zzzzz",
+    "expiresIn": 600,
+    "tokenType": "Bearer (constant)"
+}
+```
+`accessToken` - JASON web token
+`expiresIn` - Expiration time in seconds
+`tokenType` - Type of token
 
 # API Endpoints
 
@@ -31,7 +59,7 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 2. Clear Street responds with updated status of the short stock locate. If `OFFERED`, a `locate id` would be provided along with updated status
 
 ## Locate Order Status Update Request
-`PUT - /locates`
+`PATCH - /locates`
 
 1. Client requests to `ACCEPT`/`DECLINE` a locate offer
 
@@ -135,19 +163,16 @@ Request for a new short stock locate
 ```
 GET - /locates/status
 ```
-`GET - /locates/status`
+`GET - /locates/status/:clst_reference_id/:trader_account/:mpid`
 
 Request to get Locate order status that was submitted as part of New Short Stock Locate Request. This endpoint will return a locate id after a locate is offered.
 
-### Request Object
+### Request Parameters
 ```
-// Locate Order Status Request
-{
-      "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
-      "trader_account": "100000",
-      "mpid": "CPST",
-}
+// Locate Order Status Parameters
+GET - /locates/status/2af0305ffa5b4c91ba4e7ab45e2d8e4e/100000/CPST
 ```
+
 `clst_reference_id` - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)
 
 `trader_account` - An account provided by Clear Street
@@ -224,11 +249,20 @@ Request to get Locate order status that was submitted as part of New Short Stock
 
 `located_time` - Time security was located
 
-## Locate Order Status Update Request
+## Locate Order Status Update Request (Multiple)
 ```
-PUT - /locates
+PATCH - /locates
 ```
-`PUT - /locates`
+`PATCH - /locates`
+
+Request to accept/decline a Locate that was offered by Clear Street.
+
+## Locate Order Status Update Request (Single)
+```
+PATCH - /locates/19dd51b8a64d953955c5c202/100000/CPST/ACCEPT
+PATCH - /locates/19dd51b8a64d953955c5c202/100000/CPST/DECLINE
+```
+`PATCH - /locates/:locate_id/:trader_account/:mpid/:status`
 
 Request to accept/decline a Locate that was offered by Clear Street.
 
@@ -318,21 +352,21 @@ Request to accept/decline a Locate that was offered by Clear Street.
 
 ## Locate Order List Request
 ```
-GET - /locates
+GET - /locates/100000/CPST?locate_id=19dd51b8a64d953955c5c202&security_id=TSLA
 ```
-`GET - /locates`
+`GET - /locates/:trader_account/:mpid`
 
 Request for a list of Locates along with their status
 
-### Request Object
+### Request Parameters
 ```
-// List Locate Orders Request
+// List Locate Orders Request Parameters
 {
-    "page_size": 1,
-    "page_token": "",
     "trader_account": "100000",
     "mpid": "CPST",
     // Optional Fields 
+    "page_size": 1,
+    "page_token": "",
     "locate_id": "19dd51b8a64d953955c5c202",
     "reference_id": "a2022071300001",
     "security_id_type": "TICKER",
