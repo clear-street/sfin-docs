@@ -339,10 +339,7 @@
                     <a href="#locate-order-status-request-2" class="toc-h2 toc-link" data-title="Locate Order Status Request">Locate Order Status Request</a>
                   </li>
                   <li>
-                    <a href="#locate-order-status-update-request-multiple" class="toc-h2 toc-link" data-title="Locate Order Status Update Request (Multiple)">Locate Order Status Update Request (Multiple)</a>
-                  </li>
-                  <li>
-                    <a href="#locate-order-status-update-request-single" class="toc-h2 toc-link" data-title="Locate Order Status Update Request (Single)">Locate Order Status Update Request (Single)</a>
+                    <a href="#locate-order-status-update-request-2" class="toc-h2 toc-link" data-title="Locate Order Status Update Request">Locate Order Status Update Request</a>
                   </li>
                   <li>
                     <a href="#locate-order-list-request-2" class="toc-h2 toc-link" data-title="Locate Order List Request">Locate Order List Request</a>
@@ -387,7 +384,7 @@
 <li><p>Clear Street responds with <code>reference id</code> and status of <code>PENDING</code></p></li>
 </ol>
 <h2 id='locate-order-status-request'>Locate Order Status Request</h2>
-<p><code>GET - /locates/status</code></p>
+<p><code>GET - /locates</code></p>
 
 <ol>
 <li><p>Client makes a call for status request using the <code>reference id</code> from above response </p></li>
@@ -440,7 +437,7 @@
 
 <p><code>orders</code> - Repeated locate request objects</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER</p>
 
 <p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
 
@@ -480,7 +477,7 @@
 
 <p><code>requested_quantity</code> - Quantity requested for the locate</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED</p>
 <h2 id='locate-order-status-request-2'>Locate Order Status Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 </code></pre></div>
 <p><code>GET - /locates/:clst_reference_id</code></p>
@@ -490,10 +487,6 @@
 GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 </code></pre></div>
 <p><code>clst_reference_id</code> - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)</p>
-
-<p><code>trader_account</code> - An optional account provided by Clear Street</p>
-
-<p><code>mpid</code> - Optional Market Participant Identifier, assigned by Clear Street</p>
 <h3 id='response-object-3'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response when Offered
 {
       "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
@@ -508,7 +501,7 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
       "trader_comment": "A request for locate of 1000 TSLA shares",
       "located_quantity": 1000,
       "desk_comment": "Offer for locate of 1000 TSLA shares",
-      "cents_per_share": 0.01,
+      "cost_per_share": 0.01,
       "currency": "USD",
       "total_cost": 10.00,
       "status": "OFFERED",
@@ -552,26 +545,26 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 
 <p><code>desk_comment</code> - Comments provided by the Clear Street desk</p>
 
-<p><code>cents_per_share</code> - Cost of cents per share for the locate</p>
+<p><code>cost_per_share</code> - Cost per share for the locate</p>
 
 <p><code>currency</code> - Currency for the cost</p>
 
 <p><code>total_cost</code> - Total cost for the locate</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
 
 <p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-status-update-request-multiple'>Locate Order Status Update Request (Multiple)</h2><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates
-</code></pre></div>
-<p><code>PATCH - /locates</code></p>
-
-<p>Request to accept/decline a Locate that was offered by Clear Street.</p>
-<h2 id='locate-order-status-update-request-single'>Locate Order Status Update Request (Single)</h2><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates/19dd51b8a64d953955c5c202/ACCEPT
+<h2 id='locate-order-status-update-request-2'>Locate Order Status Update Request</h2><h3 id='single-update'>Single Update</h3><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates/19dd51b8a64d953955c5c202/ACCEPT
 PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 </code></pre></div>
 <p><code>PATCH - /locates/:locate_id/:status</code></p>
 
 <p>Request to accept/decline a Locate that was offered by Clear Street.</p>
+<h3 id='multiple-updates'>Multiple Updates</h3><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates
+</code></pre></div>
+<p><code>PATCH - /locates</code></p>
+
+<p>Request to accept/decline multiple Locates that were offered by Clear Street.</p>
 <h3 id='request-object-3'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Update Status Request
 {
     "locates": [
@@ -580,8 +573,6 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
             "status": "ACCEPT"
         }
     ],
-    "trader_account": "100000",
-    "mpid": "CPST",
 }
 </code></pre></div>
 <p><code>locates</code> - Repeated locate offers</p>
@@ -589,10 +580,6 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 <p><code>locate_id</code> - A unique locate id for the request</p>
 
 <p><code>status</code> - Status of the locate request. Valid values for this field are: ACCEPT, DECLINE</p>
-
-<p><code>trader_account</code> - An optional account provided by Clear Street</p>
-
-<p><code>mpid</code> - Optional Market Participant Identifier, assigned by Clear Street</p>
 <h3 id='response-object-4'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response
 {
     "locates": [
@@ -608,7 +595,7 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
             "trader_comment": "A request for locate of 1000 TSLA shares",
             "located_quantity": 1000,
             "desk_comment": "Offer filled for locate of 1000 TSLA shares",
-            "cents_per_share": 0.010,
+            "cost_per_share": 0.010,
             "currency": "USD",
             "total_cost": 10.00,
             "status": "FILLED",
@@ -639,34 +626,24 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 
 <p><code>desk_comment</code> - Comments provided by the Clear Street Stock Loan Desk</p>
 
-<p><code>cents_per_share</code> - Cost of cents per share for the locate</p>
+<p><code>cost_per_share</code> - Cost per share for the locate</p>
 
 <p><code>currency</code> - Currency for the cost</p>
 
 <p><code>total_cost</code> - Total cost for the locate</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED</p>
 
 <p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-list-request-2'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates?reference_id=a2022071300001&amp;security_id=TSLA
+<h2 id='locate-order-list-request-2'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates?reference_id=a2022071300001
+GET - /locates?locate_id=&amp;19dd51b8a64d953955c5c202&amp;page_size=1
+GET - /locates?security_id=TSLA&amp;security_id_type=TICKER&amp;listing_country=US&amp;page_size=10
+GET - /locates?trader_account=100000&amp;mpid=CPST&amp;page_size=100
 </code></pre></div>
-<p>`GET - /locates</p>
+<p><code>GET - /locates</code></p>
 
 <p>Request for a list of Locates along with their status</p>
-<h3 id='request-parameters-2'>Request Parameters</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Request Parameters
-{
-    // Optional Fields 
-    "trader_account": "100000",
-    "mpid": "CPST",
-    "page_size": 1,
-    "page_token": "",
-    "locate_id": "19dd51b8a64d953955c5c202",
-    "reference_id": "a2022071300001",
-    "security_id_type": "TICKER",
-    "security_id": "TSLA",
-    "listing_country": "US",
-}
-</code></pre></div>
+<h3 id='request-parameters-2'>Request Parameters</h3>
 <p><code>page_size</code> - Number of locates in the response</p>
 
 <p><code>page_token</code> - Token from the previous response for this request. Empty will bring the first batch of locates. </p>
@@ -679,7 +656,7 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 
 <p><code>reference_id</code> - Reference id provided by client on locate request</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER</p>
 
 <p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
 
@@ -699,7 +676,7 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
             "trader_comment": "A request for locate of 1000 TSLA shares",
             "located_quantity": 1000,
             "desk_comment": "Offer filled for locate of 1000 TSLA shares",
-            "cents_per_share": 0.01,
+            "cost_per_share": 0.01,
             "currency": "USD",
             "total_cost": 10.00,
             "status": "FILLED",
@@ -721,7 +698,7 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 
 <p><code>request_time</code> - Time request was generated by client</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER</p>
 
 <p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
 
@@ -733,13 +710,13 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 
 <p><code>desk_comment</code> - Comments provided by the Clear Street desk</p>
 
-<p><code>cents_per_share</code> - Cost of cents per share for the locate</p>
+<p><code>cost_per_share</code> - Cost per share for the locate</p>
 
 <p><code>currency</code> - Currency for the cost</p>
 
 <p><code>total_cost</code> - Total cost for the locate</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED</p>
 
 <p><code>located_time</code> - Time security was located</p>
 
