@@ -115,7 +115,7 @@ Request for a new short stock locate
 
 `orders` - Repeated locate request objects
 
-`security_id_type` - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER
+`security_id_type` - Type of the security to be located. Valid values for this field are: TICKER
 
 `security_id` - Security identifier corresponding to the security type above for the locate
 
@@ -159,7 +159,7 @@ Request for a new short stock locate
 
 `requested_quantity` - Quantity requested for the locate
 
-`status` - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED
+`status` - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED
 
 ## Locate Order Status Request
 ```
@@ -177,10 +177,6 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 
 `clst_reference_id` - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)
 
-`trader_account` - An optional account provided by Clear Street
-
-`mpid` - Optional Market Participant Identifier, assigned by Clear Street
-
 ### Response Object
 ```
 // Locate Order Status Response when Offered
@@ -197,7 +193,7 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
       "trader_comment": "A request for locate of 1000 TSLA shares",
       "located_quantity": 1000,
       "desk_comment": "Offer for locate of 1000 TSLA shares",
-      "cents_per_share": 0.01,
+      "cost_per_share": 0.01,
       "currency": "USD",
       "total_cost": 10.00,
       "status": "OFFERED",
@@ -241,13 +237,13 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 
 `desk_comment` - Comments provided by the Clear Street desk
 
-`cents_per_share` - Cost of cents per share for the locate
+`cost_per_share` - Cost per share for the locate
 
 `currency` - Currency for the cost
 
 `total_cost` - Total cost for the locate
 
-`status` - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED
+`status` - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED
 
 `located_time` - Time security was located
 
@@ -279,8 +275,6 @@ Request to accept/decline multiple Locates that were offered by Clear Street.
             "status": "ACCEPT"
         }
     ],
-    "trader_account": "100000",
-    "mpid": "CPST",
 }
 ```
 
@@ -289,10 +283,6 @@ Request to accept/decline multiple Locates that were offered by Clear Street.
 `locate_id` - A unique locate id for the request
 
 `status` - Status of the locate request. Valid values for this field are: ACCEPT, DECLINE
-
-`trader_account` - An optional account provided by Clear Street
-
-`mpid` - Optional Market Participant Identifier, assigned by Clear Street
 
 ### Response Object
 ```
@@ -311,7 +301,7 @@ Request to accept/decline multiple Locates that were offered by Clear Street.
             "trader_comment": "A request for locate of 1000 TSLA shares",
             "located_quantity": 1000,
             "desk_comment": "Offer filled for locate of 1000 TSLA shares",
-            "cents_per_share": 0.010,
+            "cost_per_share": 0.010,
             "currency": "USD",
             "total_cost": 10.00,
             "status": "FILLED",
@@ -343,40 +333,28 @@ Request to accept/decline multiple Locates that were offered by Clear Street.
 
 `desk_comment` - Comments provided by the Clear Street Stock Loan Desk
 
-`cents_per_share` - Cost of cents per share for the locate
+`cost_per_share` - Cost per share for the locate
 
 `currency` - Currency for the cost
 
 `total_cost` - Total cost for the locate
 
-`status` - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED
+`status` - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED
 
 `located_time` - Time security was located
 
 ## Locate Order List Request
 ```
-GET - /locates?reference_id=a2022071300001&security_id=TSLA
+GET - /locates?reference_id=a2022071300001
+GET - /locates?locate_id=&19dd51b8a64d953955c5c202&page_size=1
+GET - /locates?security_id=TSLA&security_id_type=TICKER&listing_country=US&page_size=10
+GET - /locates?trader_account=100000&mpid=CPST&page_size=100
 ```
 `GET - /locates`
 
 Request for a list of Locates along with their status
 
 ### Request Parameters
-```
-// List Locate Orders Request Parameters
-{
-    // Optional Fields 
-    "trader_account": "100000",
-    "mpid": "CPST",
-    "page_size": 1,
-    "page_token": "",
-    "locate_id": "19dd51b8a64d953955c5c202",
-    "reference_id": "a2022071300001",
-    "security_id_type": "TICKER",
-    "security_id": "TSLA",
-    "listing_country": "US",
-}
-```
 
 `page_size` - Number of locates in the response
 
@@ -390,7 +368,7 @@ Request for a list of Locates along with their status
 
 `reference_id` - Reference id provided by client on locate request
 
-`security_id_type` - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER
+`security_id_type` - Type of the security to be located. Valid values for this field are: TICKER
 
 `security_id` - Security identifier corresponding to the security type above for the locate
 
@@ -413,7 +391,7 @@ Request for a list of Locates along with their status
             "trader_comment": "A request for locate of 1000 TSLA shares",
             "located_quantity": 1000,
             "desk_comment": "Offer filled for locate of 1000 TSLA shares",
-            "cents_per_share": 0.01,
+            "cost_per_share": 0.01,
             "currency": "USD",
             "total_cost": 10.00,
             "status": "FILLED",
@@ -436,7 +414,7 @@ Request for a list of Locates along with their status
 
 `request_time` - Time request was generated by client
 
-`security_id_type` - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER
+`security_id_type` - Type of the security to be located. Valid values for this field are: TICKER
 
 `security_id` - Security identifier corresponding to the security type above for the locate
 
@@ -448,13 +426,13 @@ Request for a list of Locates along with their status
 
 `desk_comment` - Comments provided by the Clear Street desk
 
-`cents_per_share` - Cost of cents per share for the locate
+`cost_per_share` - Cost per share for the locate
 
 `currency` - Currency for the cost
 
 `total_cost` - Total cost for the locate
 
-`status` - Status of the locate. Valid values for this field are: INVALID, PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED
+`status` - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED
 
 `located_time` - Time security was located
 
