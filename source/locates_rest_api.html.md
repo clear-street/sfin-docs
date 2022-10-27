@@ -23,7 +23,7 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 ```
 // Auth Request
 {
-    "apiKey": "abcdefghijklmnopqrstuvwxyz123456"
+    "api_key": "abcdefghijklmnopqrstuvwxyz123456"
 }
 ```
 
@@ -33,16 +33,16 @@ Users will be authenticated using OAuth. Contact us at api-support@clearstreet.i
 ```
 // Auth Response
 {
-    "accessToken": "xxxxx.yyyyy.zzzzz",
-    "expiresIn": 600,
-    "tokenType": "Bearer"
+    "access_token": "xxxxx.yyyyy.zzzzz",
+    "expires_in": 600,
+    "token_type": "Bearer"
 }
 ```
-`accessToken` - JSON web token
+`access_token` - JSON web token
 
-`expiresIn` - Expiration time in seconds
+`expires_in` - Expiration time in seconds
 
-`tokenType` - Type of token
+`token_type` - Type of token
 
 # API Endpoints
 
