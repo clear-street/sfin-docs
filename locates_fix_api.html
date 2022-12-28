@@ -585,7 +585,7 @@ EndTime=22:00:00
 <td>Yes</td>
 </tr>
 </tbody></table>
-<h2 id='quote'>Quote</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=S34=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC131=123456783115=ACCOUNTID109=CLST117=10000155=IBM135=1000133=0.2310=025
+<h2 id='quote'>Quote</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=S34=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC131=123456783117=10000155=IBM135=1000133=0.2310=025
 </code></pre></div>
 <p><code>Quote</code> is a response sent by Clear Street as a reply to the Quote Request message with Locate ID.
 There will be one response message for each of the securities requested as part of <code>Quote Request</code>. </p>
@@ -618,26 +618,6 @@ There will be one response message for each of the securities requested as part 
 <td></td>
 <td>Unique ID from the Quote Request ReferenceId</td>
 <td></td>
-<td>AlphaNumeric</td>
-<td></td>
-<td>Required</td>
-</tr>
-<tr>
-<td>OnBehalfOfCompID</td>
-<td>115</td>
-<td></td>
-<td>On behalf of company ID<br/> Filled with same information from Quote Request message account_id</td>
-<td>ACCOUNTID</td>
-<td>AlphaNumeric</td>
-<td></td>
-<td>Optional</td>
-</tr>
-<tr>
-<td>ClientID</td>
-<td>109</td>
-<td></td>
-<td>Firm ID/MPID</td>
-<td>CLST</td>
 <td>AlphaNumeric</td>
 <td></td>
 <td>Required</td>
@@ -871,7 +851,7 @@ There will be one response message for each of the securities requested as part 
 <td>Required</td>
 </tr>
 </tbody></table>
-<h2 id='execution-report-accept-reject'>Execution Report (Accept/Reject)</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
+<h2 id='execution-report-accept-reject'>Execution Report (Accept/Reject)</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=1109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
 </code></pre></div>
 <p><code>Execution Report</code> (One Response Message for each item in List of Order Accept/Reject) is a response sent by Clear Street confirming the accept/reject of a locate. 
 There will be one response message for each item if the response is for a list of multiple securities request via <code>New Order - List</code></p>
@@ -936,16 +916,6 @@ There will be one response message for each item if the response is for a list o
 <td>1</td>
 <td>Numeric</td>
 <td>1</td>
-<td>Required</td>
-</tr>
-<tr>
-<td>TransactTime</td>
-<td>60</td>
-<td></td>
-<td>Date+Time in UTC</td>
-<td>20220121-13:27:43.000</td>
-<td>YYYYMMDD-HH:mm:SS:sss</td>
-<td>21</td>
 <td>Required</td>
 </tr>
 <tr>
@@ -1746,7 +1716,7 @@ There will be one response message for each item if the response is for a list o
 <td>Yes</td>
 </tr>
 </tbody></table>
-<h2 id='execution-report-request'>Execution Report (Request)</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000411=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATERESPONSEBYSYMBOL17=20000420=0150=B39=B1=ACCOUNTID151=014=10006=23.0044=0.2310=025
+<h2 id='execution-report-request'>Execution Report (Request)</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000411=1234567155=IBM54=1109=ACCOUNTID38=100058=THISISASINGLELOCATERESPONSEBYSYMBOL17=20000420=0150=B39=B1=ACCOUNTID151=014=10006=23.0044=0.2310=025
 </code></pre></div>
 <p><code>Execution Report</code> (One Response Message for each item in List of Order Request) is a response sent by Clear Street with a locate. 
 There will be one response message for each item if the response is for a list of multiple securities request via <code>New Order - List</code></p>
@@ -1811,16 +1781,6 @@ There will be one response message for each item if the response is for a list o
 <td>1</td>
 <td>Numeric</td>
 <td>1</td>
-<td>Required</td>
-</tr>
-<tr>
-<td>TransactTime</td>
-<td>60</td>
-<td></td>
-<td>Date+Time in UTC</td>
-<td>20220121-13:27:43.000</td>
-<td>YYYYMMDD-HH:mm:SS:sss</td>
-<td>21</td>
 <td>Required</td>
 </tr>
 <tr>
@@ -2374,7 +2334,7 @@ There will be one response message for each item if the response is for a list o
 <td>Yes</td>
 </tr>
 </tbody></table>
-<h2 id='execution-report-accept-reject-2'>Execution Report (Accept/Reject)</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
+<h2 id='execution-report-accept-reject-2'>Execution Report (Accept/Reject)</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=1109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
 </code></pre></div>
 <p><code>Execution Report</code> (One Response Message for each item in List of Order Accept/Reject) is a response sent by Clear Street confirming the accept/reject of a locate. 
 There will be one response message for each item if the response is for a list of multiple securities request via <code>New Order - List</code></p>
@@ -2439,16 +2399,6 @@ There will be one response message for each item if the response is for a list o
 <td>1</td>
 <td>Numeric</td>
 <td>1</td>
-<td>Required</td>
-</tr>
-<tr>
-<td>TransactTime</td>
-<td>60</td>
-<td></td>
-<td>Date+Time in UTC</td>
-<td>20220121-13:27:43.000</td>
-<td>YYYYMMDD-HH:mm:SS:sss</td>
-<td>21</td>
 <td>Required</td>
 </tr>
 <tr>
