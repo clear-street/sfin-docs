@@ -40,6 +40,7 @@ Users are authenticated using OAuth. For API credentials and additional informat
     "token_type": "Bearer"
 }
 ```
+
 `access_token` - JSON web token.
 
 `expires_in` - Token expiration time in seconds.

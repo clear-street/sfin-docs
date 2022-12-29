@@ -90,7 +90,7 @@ We request all new OMSs to follow this message flow
 
 ## Quote
 ```
-8=FIX.4.29=5935=S34=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC131=123456783115=ACCOUNTID109=CLST117=10000155=IBM135=1000133=0.2310=025
+8=FIX.4.29=5935=S34=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC131=123456783117=10000155=IBM135=1000133=0.2310=025
 ```
 
 `Quote` is a response sent by Clear Street as a reply to the Quote Request message with Locate ID.
@@ -100,8 +100,6 @@ There will be one response message for each of the securities requested as part 
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | MsgType | 35 | S | Message type | S | AlphaNumeric | 1 | Required |
 | QuoteReqID | 131 |  | Unique ID from the Quote Request ReferenceId |  | AlphaNumeric |  | Required |
-| OnBehalfOfCompID | 115 |  | On behalf of company ID<br/> Filled with same information from Quote Request message account_id | ACCOUNTID | AlphaNumeric |  | Optional |
-| ClientID | 109 |  | Firm ID/MPID | CLST | AlphaNumeric |  | Required |
 | QuoteID | 117 |  | Unique ID for this quote locate_id |  | AlphaNumeric |  | Required |
 | Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
 | IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
@@ -137,7 +135,7 @@ There will be one response message for each of the securities requested as part 
 
 ## Execution Report (Accept/Reject)
 ```
-8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
+8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=1109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
 ```
 
 `Execution Report` (One Response Message for each item in List of Order Accept/Reject) is a response sent by Clear Street confirming the accept/reject of a locate. 
@@ -150,7 +148,6 @@ There will be one response message for each item if the response is for a list o
 | ClOrdID | 11 |  | ClOrdID from the New Order message |  | AlphaNumeric | 25 | Required |
 | Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
 | Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Required |
-| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required |
 | ClientID | 109 |  | Same as Account ID | CLST | AlphaNumeric |  | Required |
 | OrderQty | 38 |  | Number of share requested | 1000 | Numeric |  | Required |
 | IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
@@ -284,7 +281,7 @@ This flow will be decommissioned in the future once all existing OMSs migrate to
 
 ## Execution Report (Request)
 ```
-8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000411=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATERESPONSEBYSYMBOL17=20000420=0150=B39=B1=ACCOUNTID151=014=10006=23.0044=0.2310=025
+8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000411=1234567155=IBM54=1109=ACCOUNTID38=100058=THISISASINGLELOCATERESPONSEBYSYMBOL17=20000420=0150=B39=B1=ACCOUNTID151=014=10006=23.0044=0.2310=025
 ```
 
 `Execution Report` (One Response Message for each item in List of Order Request) is a response sent by Clear Street with a locate. 
@@ -297,7 +294,6 @@ There will be one response message for each item if the response is for a list o
 | ClOrdID | 11 |  | ClOrdID from the New Order message |  | AlphaNumeric | 25 | Required |
 | Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
 | Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Required |
-| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required |
 | ClientID | 109 |  | Same as Account ID | CLST | AlphaNumeric |  | Required |
 | OrderQty | 38 |  | Number of share requested | 1000 | Numeric |  | Required |
 | IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
@@ -379,7 +375,7 @@ There will be one response message for each item if the response is for a list o
 
 ## Execution Report (Accept/Reject)
 ```
-8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=160=20220208-21:10:00.792109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
+8=FIX.4.29=5935=834=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC37=20000511=1234567155=IBM54=1109=ACCOUNTID38=100058=THISISASINGLELOCATEACCEPTRESPONSEBYSYMBOL17=20000520=0150=239=21=ACCOUNTID151=014=10006=23.0044=0.2310=025
 ```
 
 `Execution Report` (One Response Message for each item in List of Order Accept/Reject) is a response sent by Clear Street confirming the accept/reject of a locate. 
@@ -392,7 +388,6 @@ There will be one response message for each item if the response is for a list o
 | ClOrdID | 11 |  | ClOrdID from the New Order message |  | AlphaNumeric | 25 | Required |
 | Symbol | 55 |  | Security ticker | AAPL | Alpha |  | Required |
 | Side | 54 | 1-Buy<br/>2-Sell<br/>3-Buy Minus<br/>4-Sell Plus<br/>5-Sell Short<br/>6-Sell Short Exempt<br/>7-Undisclosed<br/>8-Cross<br/>9-Cross Short | Side | 1 | Numeric | 1 | Required |
-| TransactTime | 60 |  | Date+Time in UTC | 20220121-13:27:43.000 | YYYYMMDD-HH:mm:SS:sss | 21 | Required |
 | ClientID | 109 |  | Same as Account ID | CLST | AlphaNumeric |  | Required |
 | OrderQty | 38 |  | Number of share requested | 1000 | Numeric |  | Required |
 | IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
