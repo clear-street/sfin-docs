@@ -116,9 +116,9 @@ POST - /locates
 
 `reference_id` - Client-provided unique reference id for the locate request.
 
-`trader_account` -  Optional client account ID assigned by Clear Street.
+`trader_account` - Optional client account ID assigned by Clear Street.
 
-`request_time` - Time the locate request was received from the client. .  
+`request_time` - Time the locate request was received from the client.
 
 `order_status` - Repeated order status for each security in short stock locate request.
 
@@ -145,7 +145,7 @@ POST - /locates
 GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 ```
 
-`clst_reference_id` - unique order reference id from Clear Street assigned by Clear Street.
+`clst_reference_id` - Unique order reference id from Clear Street assigned by Clear Street.
 
 ### Response Object
 ```
@@ -188,7 +188,7 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 
 `reference_id` - Client-provided unique reference id for the locate request.
 
-`request_time` - Time the locate request was received from the client. . 
+`request_time` - Time the locate request was received from the client.
 
 `requested_quantity` - Quantity requested for the locate.
 
@@ -198,7 +198,7 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 
 `total_cost` - Total cost for the locate.
 
-`trader_account` -  Optional client account ID assigned by Clear Street.
+`trader_account` - Optional client account ID assigned by Clear Street.
 
 `trader_comment` - Comments provided by the trader.
 
@@ -288,7 +288,7 @@ PATCH - /locates
 
 `reference_id` - Client-provided unique reference id for the locate request.
 
-`request_time` - Time the locate request was received from the client. . 
+`request_time` - Time the locate request was received from the client.
 
 `requested_quantity` - Quantity requested for the locate.
 
@@ -298,7 +298,7 @@ PATCH - /locates
 
 `total_cost` - Total cost for the locate.
 
-`trader_account` -  Optional client account ID assigned by Clear Street.
+`trader_account` - Optional client account ID assigned by Clear Street.
 
 `trader_comment` - Comments provided by the trader.
 
@@ -369,7 +369,7 @@ GET - /locates?trader_account=100000&mpid=CPST
 
 `reference_id` - Client-provided unique reference id for the locate request.
 
-`request_time` - Time the locate request was received from the client. . 
+`request_time` - Time the locate request was received from the client.
 
 `requested_quantity` - Quantity requested for the locate.
 
@@ -379,7 +379,7 @@ GET - /locates?trader_account=100000&mpid=CPST
 
 `total_cost` - Total cost for the locate.
 
-`trader_account` -  Optional client account ID assigned by Clear Street.
+`trader_account` - Optional client account ID assigned by Clear Street.
 
 `trader_comment` - Comments provided by the trader.
 
