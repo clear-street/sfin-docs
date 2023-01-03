@@ -302,47 +302,25 @@
             <a href="#introduction" class="toc-h1 toc-link" data-title="Introduction">Introduction</a>
           </li>
           <li>
-            <a href="#authentication" class="toc-h1 toc-link" data-title="Authentication">Authentication</a>
-              <ul class="toc-list-h2">
-                  <li>
-                    <a href="#request-object" class="toc-h2 toc-link" data-title="Request Object">Request Object</a>
-                  </li>
-                  <li>
-                    <a href="#response-object" class="toc-h2 toc-link" data-title="Response Object">Response Object</a>
-                  </li>
-              </ul>
-          </li>
-          <li>
             <a href="#api-endpoints" class="toc-h1 toc-link" data-title="API Endpoints">API Endpoints</a>
               <ul class="toc-list-h2">
+                  <li>
+                    <a href="#authentication" class="toc-h2 toc-link" data-title="Authentication">Authentication</a>
+                  </li>
                   <li>
                     <a href="#new-short-stock-locate-request" class="toc-h2 toc-link" data-title="New Short Stock Locate Request">New Short Stock Locate Request</a>
                   </li>
                   <li>
-                    <a href="#locate-order-status-request" class="toc-h2 toc-link" data-title="Locate Order Status Request">Locate Order Status Request</a>
+                    <a href="#get-locate-order" class="toc-h2 toc-link" data-title="Get Locate Order">Get Locate Order</a>
                   </li>
                   <li>
                     <a href="#locate-order-status-update-request" class="toc-h2 toc-link" data-title="Locate Order Status Update Request">Locate Order Status Update Request</a>
                   </li>
                   <li>
+                    <a href="#bulk-locate-order-status-update-request" class="toc-h2 toc-link" data-title="Bulk Locate Order Status Update Request">Bulk Locate Order Status Update Request</a>
+                  </li>
+                  <li>
                     <a href="#locate-order-list-request" class="toc-h2 toc-link" data-title="Locate Order List Request">Locate Order List Request</a>
-                  </li>
-              </ul>
-          </li>
-          <li>
-            <a href="#api-details" class="toc-h1 toc-link" data-title="API Details">API Details</a>
-              <ul class="toc-list-h2">
-                  <li>
-                    <a href="#new-short-stock-locate-request-2" class="toc-h2 toc-link" data-title="New Short Stock Locate Request">New Short Stock Locate Request</a>
-                  </li>
-                  <li>
-                    <a href="#locate-order-status-request-2" class="toc-h2 toc-link" data-title="Locate Order Status Request">Locate Order Status Request</a>
-                  </li>
-                  <li>
-                    <a href="#locate-order-status-update-request-2" class="toc-h2 toc-link" data-title="Locate Order Status Update Request">Locate Order Status Update Request</a>
-                  </li>
-                  <li>
-                    <a href="#locate-order-list-request-2" class="toc-h2 toc-link" data-title="Locate Order List Request">Locate Order List Request</a>
                   </li>
               </ul>
           </li>
@@ -353,17 +331,17 @@
       <div class="content">
         <h1 id='introduction'>Introduction</h1>
 <p>The Clear Street Locates service enables users to request Short Stock Locates via a ReST API. This specification documents the service endpoints and the interaction pattern for this API.</p>
-<h1 id='authentication'>Authentication</h1><div class="highlight"><pre class="highlight plaintext"><code>POST - /auth
+<h1 id='api-endpoints'>API Endpoints</h1><h2 id='authentication'>Authentication</h2><div class="highlight"><pre class="highlight plaintext"><code>POST - /auth
 </code></pre></div>
 <p><code>POST - /auth</code></p>
 
-<p>Users will be authenticated using OAuth. Contact us at api-support@clearstreet.io for more details.</p>
+<p>Users are authenticated using OAuth. For API credentials and additional information, contact us at api-support@clearstreet.io.</p>
 <h3 id='request-object'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Auth Request
 {
     "api_key": "abcdefghijklmnopqrstuvwxyz123456"
 }
 </code></pre></div>
-<p><code>apiKey</code> - Issued by Clear Street</p>
+<p><code>api_key</code> - API key issued by Clear Street.</p>
 <h3 id='response-object'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Auth Response
 {
     "access_token": "xxxxx.yyyyy.zzzzz",
@@ -371,50 +349,26 @@
     "token_type": "Bearer"
 }
 </code></pre></div>
-<p><code>access_token</code> - JSON web token</p>
+<p><code>access_token</code> - JSON web token.</p>
 
-<p><code>expires_in</code> - Expiration time in seconds</p>
+<p><code>expires_in</code> - Token expiration time in seconds.</p>
 
-<p><code>token_type</code> - Type of token</p>
-<h1 id='api-endpoints'>API Endpoints</h1><h2 id='new-short-stock-locate-request'>New Short Stock Locate Request</h2>
-<p><code>POST - /locates</code></p>
+<p><code>token_type</code> - Type of token, e.g. <code>Bearer</code>.</p>
 
-<ol>
-<li><p>Client requests for a new short stock locate </p></li>
-<li><p>Clear Street responds with <code>reference id</code> and status of <code>PENDING</code></p></li>
-</ol>
-<h2 id='locate-order-status-request'>Locate Order Status Request</h2>
-<p><code>GET - /locates</code></p>
-
-<ol>
-<li><p>Client makes a call for status request using the <code>reference id</code> from above response </p></li>
-<li><p>Clear Street responds with updated status of the short stock locate. If <code>OFFERED</code>, a <code>locate id</code> would be provided along with updated status</p></li>
-</ol>
-<h2 id='locate-order-status-update-request'>Locate Order Status Update Request</h2>
-<p><code>PATCH - /locates</code></p>
-
-<ol>
-<li><p>Client requests to <code>ACCEPT</code>/<code>DECLINE</code> a locate offer</p></li>
-<li><p>Clear Street responds with updated status</p></li>
-</ol>
-<h2 id='locate-order-list-request'>Locate Order List Request</h2>
-<p><code>GET - /locates</code></p>
-
-<ol>
-<li><p>Client requests for a list of locates with a filter criteria</p></li>
-<li><p>Clear Street responds with a list of locates for the given criteria</p></li>
-</ol>
-<h1 id='api-details'>API Details</h1><h2 id='new-short-stock-locate-request-2'>New Short Stock Locate Request</h2><div class="highlight"><pre class="highlight plaintext"><code>POST - /locates
+<p>Once authenticated, the <code>access_token</code> must be passed as a <code>Bearer</code> token in the HTTP <code>Authorization</code> header for subsequent API requests.</p>
+<h2 id='new-short-stock-locate-request'>New Short Stock Locate Request</h2><div class="highlight"><pre class="highlight plaintext"><code>POST - /locates
 </code></pre></div>
 <p><code>POST - /locates</code></p>
 
-<p>Request for a new short stock locate</p>
+<ol>
+<li><p>Client sends a new Locate request. A single request can contain one or more orders, each order for a single <code>security_id</code> and <code>requested_quantity</code>.</p></li>
+<li><p>Clear Street responds with a list of <code>PENDING</code> orders.  Each order is assigned a unique <code>clst_reference_id</code>.  Orders are processed in-order, asynchonously.</p></li>
+</ol>
 <h3 id='request-object-2'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Request
 {
-    "reference_id": "a2022071300001",
-    "trader_account": "100000",
     "mpid": "CPST",
-    "request_time": "20220711-18:40:40",
+    "trader_account": "100000",
+    "reference_id": "a2022122300001",
     "trader_comment": "A request to locate 1000 TSLA shares",
     "orders": [
         {
@@ -425,29 +379,27 @@
     ]
 }
 </code></pre></div>
-<p><code>reference_id</code> - A unique reference id for each locate request</p>
+<p><code>mpid</code> - The client Market Participant Identifier, assigned by Clear Street.</p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>trader_account</code> - Optional client account ID assigned by Clear Street.</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
+<p><code>reference_id</code> - Client-provided unique reference id for the locate request. This is assigned to all orders in the locate request.</p>
 
-<p><code>request_time</code> - Time request was generated by client</p>
+<p><code>trader_comment</code> - Comments provided by the trader.</p>
 
-<p><code>trader_comment</code> - Comments provided by the trader</p>
+<p><code>orders</code> - List of locate order objects.</p>
 
-<p><code>orders</code> - Repeated locate request objects</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER.</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER</p>
+<p><code>security_id</code> - Security identifier corresponding to the <code>security_id_type</code> for the order.</p>
 
-<p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
-
-<p><code>requested_quantity</code> - Quantity requested for the locate</p>
+<p><code>requested_quantity</code> - Quantity requested for the locate.</p>
 <h3 id='response-object-2'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Response
 {
-    "reference_id": "a2022071300001",
-    "trader_account": "100000",
     "mpid": "CPST",
-    "request_time": "20220711-18:40:40",
+    "reference_id": "a2022122300001",
+    "trader_account": "100000",
+    "request_time": "2022-12-23T13:00:00.000+00:00",
     "order_status": [
         {
             "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
@@ -459,113 +411,107 @@
     ]
 }
 </code></pre></div>
-<p><code>reference_id</code> - Reference id provided by client on locate request</p>
+<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street.</p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>reference_id</code> - Client-provided unique reference id for the locate request.</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
+<p><code>trader_account</code> - Optional client account ID assigned by Clear Street.</p>
 
-<p><code>request_time</code> - Time request was generated by client</p>
+<p><code>request_time</code> - Time the locate request was received from the client.</p>
 
-<p><code>order_status</code> - Repeated order status for each security in short stock locate request</p>
+<p><code>order_status</code> - Repeated order status for each security in short stock locate request.</p>
 
-<p><code>clst_reference_id</code> - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)</p>
+<p><code>clst_reference_id</code> - A unique order reference id assigned by Clear Street.</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER</p>
+<p><code>requested_quantity</code> - Quantity requested for the locate.</p>
 
-<p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER.</p>
 
-<p><code>requested_quantity</code> - Quantity requested for the locate</p>
+<p><code>security_id</code> - Security identifier corresponding to the <code>security_id_type</code> for the order</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED</p>
-<h2 id='locate-order-status-request-2'>Locate Order Status Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
-</code></pre></div>
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED.</p>
+<h2 id='get-locate-order'>Get Locate Order</h2>
 <p><code>GET - /locates/:clst_reference_id</code></p>
 
-<p>Request to get Locate order status that was submitted as part of New Short Stock Locate Request. This endpoint will return a locate id after a locate is offered.</p>
-<h3 id='request-parameters'>Request Parameters</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Parameters
-GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
+<ol>
+<li><p>Client sends a request using the unique order <code>clst_reference_id</code></p></li>
+<li><p>Clear Street responds with current state of the locate order. If the order has been <code>OFFERED</code>, a <code>locate_id</code> is assigned and <code>located_quantity</code> populated with the number of shares that were located.</p></li>
+</ol>
+<h3 id='request-parameters'>Request Parameters</h3><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 </code></pre></div>
-<p><code>clst_reference_id</code> - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)</p>
-<h3 id='response-object-3'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response when Offered
+<p><code>clst_reference_id</code> - Unique order reference id from Clear Street assigned by Clear Street.</p>
+<h3 id='response-object-3'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response
 {
-      "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
-      "locate_id": "19dd51b8a64d953955c5c202",
-      "reference_id": "a2022071300001",
-      "trader_account": "100000",
-      "mpid": "CPST",
-      "request_time": "20220711-18:40:40",
-      "security_id_type": "TICKER",
-      "security_id": “TSLA”,
-      "requested_quantity": 1000,
-      "trader_comment": "A request for locate of 1000 TSLA shares",
-      "located_quantity": 1000,
-      "desk_comment": "Offer for locate of 1000 TSLA shares",
-      "cost_per_share": 0.01,
-      "currency": "USD",
-      "total_cost": 10.00,
-      "status": "OFFERED",
-      "located_time": "20220711-18:40:42"
-}
-
-// Locate Order Status Response when Pending
-{
-      "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
-      "reference_id": "a2022071300001",
-      "trader_account": "100000",
-      "mpid": "CPST",
-      "request_time": "20220711-18:40:40",
-      "security_id_type": "TICKER",
-      "security_id": “TSLA”,
-      "requested_quantity": 1000,
-      "status": "PENDING",
+    "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
+    "cost_per_share": 0.01,
+    "currency": "USD",
+    "desk_comment": "Offer for locate of 1000 TSLA shares",
+    "locate_id": "19dd51b8a64d953955c5c202",
+    "located_quantity": 1000,
+    "located_time": "2022-12-23T13:05:00.000+00:00",
+    "mpid": "CPST",
+    "reference_id": "a2022122300001",
+    "request_time": "2022-12-23T13:00:00.000+00:00",
+    "requested_quantity": 1000,
+    "trader_account": "100000",
+    "trader_comment": "A request for locate of 1000 TSLA shares",
+    "security_id": “TSLA”,
+    "security_id_type": "TICKER",
+    "status": "OFFERED",
+    "total_cost": 10.00
 }
 </code></pre></div>
-<p><code>clst_reference_id</code> - A unique reference id from Clear Street for a given day. (Please note that this is different from a locate id and should be used to get the locate id. Locate id will be assigned only after a locate is offered.)</p>
+<p><code>clst_reference_id</code> - A unique order reference id provided by Clear Street.</p>
 
-<p><code>locate_id</code> - A unique locate id for the request</p>
+<p><code>cost_per_share</code> - Cost per share for the locate.</p>
 
-<p><code>reference_id</code> - Reference id provided by client on locate request</p>
+<p><code>currency</code> - Currency for the cost.</p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>desk_comment</code> - Comments provided by the Clear Street Stock Loan Desk.</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
+<p><code>locate_id</code> - A unique locate id for the order, available once the order is OFFERED.</p>
 
-<p><code>request_time</code> - Time request was generated by client</p>
+<p><code>located_quantity</code> - Quantity offered by Clear Street.</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER</p>
+<p><code>located_time</code> - Time security was located.</p>
 
-<p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
+<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street.</p>
 
-<p><code>requested_quantity</code> - Quantity requested for the locate</p>
+<p><code>reference_id</code> - Client-provided unique reference id for the locate request.</p>
 
-<p><code>trader_comment</code> - Comments provided by the trader</p>
+<p><code>request_time</code> - Time the locate request was received from the client.</p>
 
-<p><code>located_quantity</code> - Quantity offered by Clear Street</p>
+<p><code>requested_quantity</code> - Quantity requested for the locate.</p>
 
-<p><code>desk_comment</code> - Comments provided by the Clear Street desk</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER.</p>
 
-<p><code>cost_per_share</code> - Cost per share for the locate</p>
+<p><code>security_id</code> - Security identifier corresponding to the <code>security_id_type</code> for the order</p>
 
-<p><code>currency</code> - Currency for the cost</p>
+<p><code>total_cost</code> - Total cost for the locate.</p>
 
-<p><code>total_cost</code> - Total cost for the locate</p>
+<p><code>trader_account</code> - Optional client account ID assigned by Clear Street.</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED, PARTIALLY_OFFERED</p>
+<p><code>trader_comment</code> - Comments provided by the trader.</p>
 
-<p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-status-update-request-2'>Locate Order Status Update Request</h2><h3 id='single-update'>Single Update</h3><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates/19dd51b8a64d953955c5c202/ACCEPT
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED.</p>
+<h2 id='locate-order-status-update-request'>Locate Order Status Update Request</h2><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates/19dd51b8a64d953955c5c202/ACCEPT
 PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
 </code></pre></div>
-<p><code>PATCH - /locates/:locate_id/:status</code></p>
+<p><code>PATCH - /locates/:clst_reference_id/:status</code></p>
 
-<p>Request to accept/decline a Locate that was offered by Clear Street.</p>
-<h3 id='multiple-updates'>Multiple Updates</h3><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates
+<ol>
+<li><p>Client requests to <code>ACCEPT</code>/<code>DECLINE</code> a locate offer identified by its unique <code>clst_reference_id</code></p></li>
+<li><p>If successful, Clear Street responds with a 200 status code. If the operation fails, Clear Street response with a 400 status code and an error message.</p></li>
+</ol>
+<h2 id='bulk-locate-order-status-update-request'>Bulk Locate Order Status Update Request</h2><div class="highlight"><pre class="highlight plaintext"><code>PATCH - /locates
 </code></pre></div>
 <p><code>PATCH - /locates</code></p>
 
-<p>Request to accept/decline multiple Locates that were offered by Clear Street.</p>
-<h3 id='request-object-3'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Update Status Request
+<ol>
+<li><p>Client requests to <code>ACCEPT</code>/<code>DECLINE</code> multiple locate offers, each identified by its unique <code>clst_reference_id</code>.</p></li>
+<li><p>Clear Street responds with a list of locate orders, each reflecting the current state of the order after the <code>ACCEPT</code>/<code>DECLINE</code> has been processed.</p></li>
+</ol>
+<h3 id='request-object-3'>Request Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Bulk Locate Order Status Update Request
 {
     "locates": [
         {
@@ -575,20 +521,20 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
     ],
 }
 </code></pre></div>
-<p><code>locates</code> - Repeated locate offers</p>
+<p><code>locates</code> - Repeated <code>OFFERED</code> locate orders to be accepted or declined.</p>
 
-<p><code>locate_id</code> - A unique locate id for the request</p>
+<p><code>locate_id</code> - Unique order clst_reference_id provided by Clear Street.</p>
 
-<p><code>status</code> - Status of the locate request. Valid values for this field are: ACCEPT, DECLINE</p>
-<h3 id='response-object-4'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Locate Order Status Response
+<p><code>status</code> - Action to apply to this order. Valid values are: ACCEPT, DECLINE.</p>
+<h3 id='response-object-4'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// Bulk Locate Order Status Update Response
 {
     "locates": [
         {
             "locate_id": "19dd51b8a64d953955c5c202",
-            "reference_id": "a2022071300001",
+            "reference_id": "a2022122300001",
             "trader_account": "100000",
             "mpid": "CPST",
-            "request_time": "20220711-18:40:40",
+            "request_time": "2022-12-23T13:00:00.000+00:00",
             "security_id_type": "TICKER",
             "security_id": "TSLA",
             "requested_quantity": 1000,
@@ -599,128 +545,117 @@ PATCH - /locates/19dd51b8a64d953955c5c202/DECLINE
             "currency": "USD",
             "total_cost": 10.00,
             "status": "FILLED",
-            "located_time": "20220711-18:40:42"
+            "located_time": "2022-12-23T13:05:00.000+00:00"
         }
     ]
 }
 </code></pre></div>
-<p><code>locate_id</code> - A unique locate id for the request</p>
+<p><code>clst_reference_id</code> - A unique order reference id provided by Clear Street.</p>
 
-<p><code>reference_id</code> - Reference id provided by client on locate request</p>
+<p><code>cost_per_share</code> - Cost per share for the locate.</p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>currency</code> - Currency for the cost.</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
+<p><code>desk_comment</code> - Comments provided by the Clear Street Stock Loan Desk.</p>
 
-<p><code>request_time</code> - Time request was generated by client</p>
+<p><code>locate_id</code> - A unique locate id for the order, available once the order is OFFERED.</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: CUSIP, ISIN, SEDOL, TICKER</p>
+<p><code>located_quantity</code> - Quantity offered by Clear Street.</p>
 
-<p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
+<p><code>located_time</code> - Time security was located.</p>
 
-<p><code>requested_quantity</code> - Quantity requested for the locate</p>
+<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street.</p>
 
-<p><code>trader_comment</code> - Comments provided by the trader</p>
+<p><code>reference_id</code> - Client-provided unique reference id for the locate request.</p>
 
-<p><code>located_quantity</code> - Quantity offered by Clear Street</p>
+<p><code>request_time</code> - Time the locate request was received from the client.</p>
 
-<p><code>desk_comment</code> - Comments provided by the Clear Street Stock Loan Desk</p>
+<p><code>requested_quantity</code> - Quantity requested for the locate.</p>
 
-<p><code>cost_per_share</code> - Cost per share for the locate</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER.</p>
 
-<p><code>currency</code> - Currency for the cost</p>
+<p><code>security_id</code> - Security identifier corresponding to the <code>security_id_type</code> for the order</p>
 
-<p><code>total_cost</code> - Total cost for the locate</p>
+<p><code>total_cost</code> - Total cost for the locate.</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED</p>
+<p><code>trader_account</code> - Optional client account ID assigned by Clear Street.</p>
 
-<p><code>located_time</code> - Time security was located</p>
-<h2 id='locate-order-list-request-2'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates?reference_id=a2022071300001
-GET - /locates?locate_id=&amp;19dd51b8a64d953955c5c202&amp;page_size=1
-GET - /locates?security_id=TSLA&amp;security_id_type=TICKER&amp;listing_country=US&amp;page_size=10
-GET - /locates?trader_account=100000&amp;mpid=CPST&amp;page_size=100
+<p><code>trader_comment</code> - Comments provided by the trader.</p>
+
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED.</p>
+<h2 id='locate-order-list-request'>Locate Order List Request</h2><div class="highlight"><pre class="highlight plaintext"><code>GET - /locates?reference_id=a2022071300001
+GET - /locates?trader_account=100000&amp;mpid=CPST
 </code></pre></div>
-<p><code>GET - /locates</code></p>
+<p><code>GET - /locates?reference_id=:reference_id&amp;mpid=:mpid&amp;trader_account=:trader_account</code></p>
 
-<p>Request for a list of Locates along with their status</p>
+<ol>
+<li><p>Client requests a list of locate orders, providing filter criteria as request query parameters.  All filter parameters are optional.</p></li>
+<li><p>Clear Street responds with a list of locate orders matching the filter criteria. </p></li>
+</ol>
 <h3 id='request-parameters-2'>Request Parameters</h3>
-<p><code>page_size</code> - Number of locates in the response</p>
+<p><code>mpid</code> - Optional Market Participant Identifier, assigned by Clear Street.</p>
 
-<p><code>page_token</code> - Token from the previous response for this request. Empty will bring the first batch of locates. </p>
+<p><code>trader_account</code> -  Optional client account ID assigned by Clear Street.</p>
 
-<p><code>trader_account</code> - An optional account provided by Clear Street</p>
-
-<p><code>mpid</code> - Optional Market Participant Identifier, assigned by Clear Street</p>
-
-<p><code>locate_id</code> - A unique locate id for the request</p>
-
-<p><code>reference_id</code> - Reference id provided by client on locate request</p>
-
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER</p>
-
-<p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
-
-<p><code>listing_country</code> - Listing country of the security</p>
+<p><code>reference_id</code> - Client-provided unique reference id specified in the initial locate request.</p>
 <h3 id='response-object-5'>Response Object</h3><div class="highlight"><pre class="highlight plaintext"><code>// List Locate Orders Response
 {
     "locates": [
         {
-            "locate_id": "19dd51b8a64d953955c5c202",
-            "reference_id": "a2022071300001",
-            "trader_account": "100000",
-            "mpid": "CPST",
-            "request_time": "20220711-18:40:40",
-            "security_id_type": "TICKER",
-            "security_id": "TSLA",
-            "requested_quantity": 1000,
-            "trader_comment": "A request for locate of 1000 TSLA shares",
-            "located_quantity": 1000,
-            "desk_comment": "Offer filled for locate of 1000 TSLA shares",
+            "clst_reference_id" : "19dd51b8a64d953955c5c202",
             "cost_per_share": 0.01,
             "currency": "USD",
-            "total_cost": 10.00,
+            "desk_comment": "Offer filled for locate of 1000 TSLA shares",
+            "locate_id": "19dd51b8a64d953955c5c202",
+            "located_quantity": 1000,
+            "located_time": "2022-12-23T13:05:00.000+00:00"
+            "mpid": "CPST",
+            "reference_id": "a2022122300001",
+            "request_time": "2022-12-23T13:00:00.000+00:00",
+            "requested_quantity": 1000,
+            "security_id": "TSLA",
+            "security_id_type": "TICKER",
             "status": "FILLED",
-            "located_time": "20220711-18:40:42"
+            "total_cost": 10.00,
+            "trader_account": "100000",
+            "trader_comment": "A request for locate of 1000 TSLA shares",
         }
-    ],
-    "next_page_token": ""
+    ]
 }
 </code></pre></div>
-<p><code>locates</code> - Repeated locate offers</p>
+<p><code>clst_reference_id</code> - A unique order reference id provided by Clear Street.</p>
 
-<p><code>locate_id</code> - A unique locate id for the request</p>
+<p><code>cost_per_share</code> - Cost per share for the locate.</p>
 
-<p><code>reference_id</code> - Reference id provided by client on locate request</p>
+<p><code>currency</code> - Currency for the cost.</p>
 
-<p><code>trader_account</code> - An account provided by Clear Street</p>
+<p><code>desk_comment</code> - Comments provided by the Clear Street Stock Loan Desk.</p>
 
-<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street</p>
+<p><code>locate_id</code> - A unique locate id for the order, available once the order is OFFERED.</p>
 
-<p><code>request_time</code> - Time request was generated by client</p>
+<p><code>located_quantity</code> - Quantity offered by Clear Street.</p>
 
-<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER</p>
+<p><code>located_time</code> - Time security was located.</p>
 
-<p><code>security_id</code> - Security identifier corresponding to the security type above for the locate</p>
+<p><code>mpid</code> - Market Participant Identifier, assigned by Clear Street.</p>
 
-<p><code>requested_quantity</code> - Quantity requested for the locate</p>
+<p><code>reference_id</code> - Client-provided unique reference id for the locate request.</p>
 
-<p><code>trader_comment</code> - Comments provided by the trader</p>
+<p><code>request_time</code> - Time the locate request was received from the client.</p>
 
-<p><code>located_quantity</code> - Quantity offered by Clear Street</p>
+<p><code>requested_quantity</code> - Quantity requested for the locate.</p>
 
-<p><code>desk_comment</code> - Comments provided by the Clear Street desk</p>
+<p><code>security_id_type</code> - Type of the security to be located. Valid values for this field are: TICKER.</p>
 
-<p><code>cost_per_share</code> - Cost per share for the locate</p>
+<p><code>security_id</code> - Security identifier corresponding to the <code>security_id_type</code> for the order</p>
 
-<p><code>currency</code> - Currency for the cost</p>
+<p><code>total_cost</code> - Total cost for the locate.</p>
 
-<p><code>total_cost</code> - Total cost for the locate</p>
+<p><code>trader_account</code> - Optional client account ID assigned by Clear Street.</p>
 
-<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED</p>
+<p><code>trader_comment</code> - Comments provided by the trader.</p>
 
-<p><code>located_time</code> - Time security was located</p>
-
-<p><code>next_page_token</code> - Token for requesting the next set of locates for the request when the total number of locates exceeds the requested page_size. Empty if there are no more locates for this query.</p>
+<p><code>status</code> - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED.</p>
 
       </div>
       <div class="dark-box">
