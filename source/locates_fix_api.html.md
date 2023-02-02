@@ -105,7 +105,8 @@ There will be one response message for each of the securities requested as part 
 | IDSource | 22 | 1-CUSIP<br/>2-SEDOL<br/>4-ISIN<br/>8-Exchange Symbol | Security ID type | 1 | Numeric | 1 | Conditionally Required |
 | SecurityID | 48 |  | Security ID as per IDSource tag 22 | 037833100 | AlphaNumeric | 12 | Conditionally Required |
 | OfferSize | 135 |  | Number of shares that can be offered<br/>If availability is less the OrderQty then availability<br/>If availability is more than OrderQty then OrderQty<br/>1 if no OrderQty is specified and available<br/>0 if no OrderQty is specified and not available | 1000 | Numeric |  | Required |
-| OfferPx | 133 |  | Offer price for the security requested | 0.23 | Numeric |  | Required |
+| OfferPx | 133 |  | Offer price for the security requested in cents-per-share | 0.23 | Numeric |  | Required |
+| OfferSpotRate | 190 |  | Offer borrow rate for the security | -40 | Numeric |  | Optional |
 
 ## New Order-Single (To Accept an Offer) 
 ```
@@ -308,6 +309,7 @@ There will be one response message for each item if the response is for a list o
 | CumQty | 14 |  | Currently executed shares |  | Numeric |  | Required |
 | AvgPx | 6 |  | Calculated average price |  | Numeric |  | Required |
 | Price | 44 |  | Price |  | Numeric |  | Required |
+| LastSpotRate | 194 |  | Borrow rate for the security |  | Numeric |  | Optional |
 
 ## New Order-Single (Accept/Reject) 
 ```
@@ -401,6 +403,7 @@ There will be one response message for each item if the response is for a list o
 | LeavesQty | 151 |  | Amount of shares open for further execution |  | Numeric |  | Required |
 | CumQty | 14 |  | Currently executed shares | 1000 | Numeric |  | Required |
 | AvgPx | 6 |  | Calculated average price | 0.23 | Numeric |  | Required |
+| LastSpotRate | 194 |  | Borrow rate for the security |  | Numeric |  | Optional |
 
 ## Reject
 ```
