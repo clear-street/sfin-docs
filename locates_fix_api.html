@@ -676,11 +676,21 @@ There will be one response message for each of the securities requested as part 
 <td>OfferPx</td>
 <td>133</td>
 <td></td>
-<td>Offer price for the security requested</td>
+<td>Offer price for the security requested in cents-per-share</td>
 <td>0.23</td>
 <td>Numeric</td>
 <td></td>
 <td>Required</td>
+</tr>
+<tr>
+<td>OfferSpotRate</td>
+<td>190</td>
+<td></td>
+<td>Offer borrow rate for the security</td>
+<td>-40</td>
+<td>Numeric</td>
+<td></td>
+<td>Optional</td>
 </tr>
 </tbody></table>
 <h2 id='new-order-single-to-accept-an-offer'>New Order-Single (To Accept an Offer)</h2><div class="highlight"><pre class="highlight plaintext"><code>// Example: Accept
@@ -1923,6 +1933,16 @@ There will be one response message for each item if the response is for a list o
 <td></td>
 <td>Required</td>
 </tr>
+<tr>
+<td>LastSpotRate</td>
+<td>194</td>
+<td></td>
+<td>Borrow rate for the security</td>
+<td></td>
+<td>Numeric</td>
+<td></td>
+<td>Optional</td>
+</tr>
 </tbody></table>
 <h2 id='new-order-single-accept-reject'>New Order-Single (Accept/Reject)</h2><div class="highlight"><pre class="highlight plaintext"><code>// Example 1: Accept
 8=FIX.4.29=005435=D49=OMSC56=CLSTLOCT34=136052=20220208-21:10:0111=1234568160=20220208-21:10:00.792109=ACCOUNTID76=USRNM,PSWD1=ACCOUNTID117=100011,110=106
@@ -2530,6 +2550,16 @@ There will be one response message for each item if the response is for a list o
 <td>Numeric</td>
 <td></td>
 <td>Required</td>
+</tr>
+<tr>
+<td>LastSpotRate</td>
+<td>194</td>
+<td></td>
+<td>Borrow rate for the security</td>
+<td></td>
+<td>Numeric</td>
+<td></td>
+<td>Optional</td>
 </tr>
 </tbody></table>
 <h2 id='reject-2'>Reject</h2><div class="highlight"><pre class="highlight plaintext"><code>8=FIX.4.29=5935=334=2851249=CLSTLOCT52=20220208-21:10:45.33656=OMSC45=12345691371=158=Order rejected. Missing Account10=025
