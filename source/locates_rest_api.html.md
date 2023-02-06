@@ -152,6 +152,7 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
 ```
 // Locate Order Status Response
 {
+    "borrow_rate": -40,
     "clst_reference_id": "2af0305ffa5b4c91ba4e7ab45e2d8e4e", 
     "cost_per_share": 0.01,
     "currency": "USD",
@@ -171,6 +172,8 @@ GET - /locates/2af0305ffa5b4c91ba4e7ab45e2d8e4e
     "total_cost": 10.00
 }
 ```
+`borrow_rate` - Borrow rate for the security if held overnight.
+
 `clst_reference_id` - A unique order reference id provided by Clear Street.
 
 `cost_per_share` - Cost per share for the locate.
@@ -251,26 +254,29 @@ PATCH - /locates
 {
     "locates": [
         {
-            "locate_id": "19dd51b8a64d953955c5c202",
-            "reference_id": "a2022122300001",
-            "trader_account": "100000",
-            "mpid": "CPST",
-            "request_time": "2022-12-23T13:00:00.000+00:00",
-            "security_id_type": "TICKER",
-            "security_id": "TSLA",
-            "requested_quantity": 1000,
-            "trader_comment": "A request for locate of 1000 TSLA shares",
-            "located_quantity": 1000,
-            "desk_comment": "Offer filled for locate of 1000 TSLA shares",
+            "borrow_rate": 20,
             "cost_per_share": 0.010,
             "currency": "USD",
-            "total_cost": 10.00,
-            "status": "FILLED",
+            "desk_comment": "Offer filled for locate of 1000 TSLA shares",
+            "locate_id": "19dd51b8a64d953955c5c202",
+            "located_quantity": 1000,
             "located_time": "2022-12-23T13:05:00.000+00:00"
+            "mpid": "CPST",
+            "reference_id": "a2022122300001",
+            "request_time": "2022-12-23T13:00:00.000+00:00",
+            "requested_quantity": 1000,
+            "security_id_type": "TICKER",
+            "security_id": "TSLA",
+            "total_cost": 10.00,
+            "trader_account": "100000",
+            "trader_comment": "A request for locate of 1000 TSLA shares",
+            "status": "FILLED",
         }
     ]
 }
 ```
+`borrow_rate` - Borrow rate for the security if held overnight.
+
 `clst_reference_id` - A unique order reference id provided by Clear Street.
 
 `cost_per_share` - Cost per share for the locate.
@@ -330,6 +336,7 @@ GET - /locates?trader_account=100000&mpid=CPST
 {
     "locates": [
         {
+            "borrow_rate" : -40,
             "clst_reference_id" : "19dd51b8a64d953955c5c202",
             "cost_per_share": 0.01,
             "currency": "USD",
@@ -351,6 +358,7 @@ GET - /locates?trader_account=100000&mpid=CPST
     ]
 }
 ```
+`borrow_rate` - Borrow rate for the security if held overnight.
 
 `clst_reference_id` - A unique order reference id provided by Clear Street.
 
