@@ -260,7 +260,7 @@ PATCH - /locates
             "desk_comment": "Offer filled for locate of 1000 TSLA shares",
             "locate_id": "19dd51b8a64d953955c5c202",
             "located_quantity": 1000,
-            "located_time": "2022-12-23T13:05:00.000+00:00"
+            "located_time": "2022-12-23T13:05:00.000+00:00",
             "mpid": "CPST",
             "reference_id": "a2022122300001",
             "request_time": "2022-12-23T13:00:00.000+00:00",
@@ -270,7 +270,7 @@ PATCH - /locates
             "total_cost": 10.00,
             "trader_account": "100000",
             "trader_comment": "A request for locate of 1000 TSLA shares",
-            "status": "FILLED",
+            "status": "FILLED"
         }
     ]
 }
@@ -343,7 +343,7 @@ GET - /locates?trader_account=100000&mpid=CPST
             "desk_comment": "Offer filled for locate of 1000 TSLA shares",
             "locate_id": "19dd51b8a64d953955c5c202",
             "located_quantity": 1000,
-            "located_time": "2022-12-23T13:05:00.000+00:00"
+            "located_time": "2022-12-23T13:05:00.000+00:00",
             "mpid": "CPST",
             "reference_id": "a2022122300001",
             "request_time": "2022-12-23T13:00:00.000+00:00",
@@ -353,7 +353,7 @@ GET - /locates?trader_account=100000&mpid=CPST
             "status": "FILLED",
             "total_cost": 10.00,
             "trader_account": "100000",
-            "trader_comment": "A request for locate of 1000 TSLA shares",
+            "trader_comment": "A request for locate of 1000 TSLA shares"
         }
     ]
 }
