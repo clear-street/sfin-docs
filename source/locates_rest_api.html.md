@@ -393,3 +393,39 @@ GET - /locates?trader_account=100000&mpid=CPST
 `trader_comment` - Comments provided by the trader.
 
 `status` - Status of the locate. Valid values for this field are: PENDING, OFFERED, FILLED, REJECTED, DECLINED, EXPIRED.
+
+## Rates
+
+### HTTP Request
+
+`POST - /rates`
+
+```
+POST - /rates
+```
+
+1. Client requests the current borrow rate for a security for the specified client.
+
+2. Clear Street responds with the borrow rate for the matching criteria
+
+<aside class="notice">
+Borrow rates can only be fetched during business hours from 4:00 AM - 10:00 PM EST
+</aside>
+
+### Request Parameters
+
+Parameter | Description
+--------- | -----------
+mpid | Market Participant Identifier, assigned by Clear Street (e.g. CLST)
+symbol_type | The type of symbol (e.g. Ticker, Bloomberg ID, CUSIP, ISIN, or SEDOL)
+symbol | The security identifier that matches with the symbol_type (e.g. AAPL for Ticker, 037833100 for CUSIP, etc.)
+
+### Response Object
+
+```json
+{
+  "borrow_rate": -20
+}
+```
+
+`borrow_rate` - Borrow rate for the security if held overnight.
