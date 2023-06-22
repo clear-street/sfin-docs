@@ -410,6 +410,7 @@ POST - /rates
 
 <aside class="notice">
 Borrow rates can only be fetched during business hours from 4:00 AM - 10:00 PM EST
+There is a limit on how many requests can be made each business day
 </aside>
 
 ### Request Parameters
@@ -420,12 +421,31 @@ mpid | Market Participant Identifier, assigned by Clear Street (e.g. CLST)
 symbol_type | The type of symbol (e.g. Ticker, Bloomberg ID, CUSIP, ISIN, or SEDOL)
 symbol | The security identifier that matches with the symbol_type (e.g. AAPL for Ticker, 037833100 for CUSIP, etc.)
 
-### Response Object
+### Responses
 
-```json
-{
-  "borrow_rate": -20
-}
-```
+<details>
+  <summary><aside class="success">200 OK</aside></summary>
 
-`borrow_rate` - Borrow rate for the security if held overnight.
+  ```json
+  {
+    "borrow_rate": -20
+  }
+  ```
+  Parameter | Description
+  --------- | -----------
+  borrow_rate | Borrow rate for the security if held overnight
+  
+</details>
+
+<details>
+  <summary><aside class="warning">401 Unauthorized</aside></summary>
+  
+  Invalid MPID or do not have permission for MPID provided
+
+  ```json
+  {
+    "message": "MPID is invalid or you do not have permission"
+  }
+  ```
+  
+</details>
