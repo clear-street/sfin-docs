@@ -1,3 +1,8 @@
+# Introduction
+The Clear Street rates service enables users to request the borrow rate for a security
+
+# API Endpoints
+
 ## Rates
 
 ### HTTP Request
@@ -51,7 +56,7 @@ security | string | **REQUIRED**. The security identifier
   Parameter | Type | Description
   --------- | ----------- | -----------
   rate_id | string | An ID for the rate response
-  borrow_rate | string | Borrow rate for the security if held overnight
+  borrow_rate | number | Borrow rate for the security if held overnight
   
 </details>
 
@@ -61,7 +66,7 @@ security | string | **REQUIRED**. The security identifier
   Entering an MPID in which you are not authorized to view
   ```json
   {
-    "message": "You do not have authorization to view this MPID"
+    "message": "You do not have authorization for this MPID"
   }
   ```
   Parameter | Type | Description
@@ -73,10 +78,10 @@ security | string | **REQUIRED**. The security identifier
 <details>
   <summary><aside class="warning">400 Bad Request</aside></summary>
   
-  An MPID that does not exist or one you are not authorized to view
+  An MPID that does not exist
   ```json
   {
-    "message": "MPID is either invalid or you do not have authorization to view it"
+    "message": "MPID does not exist"
   }
   ```
   Parameter | Type | Description
