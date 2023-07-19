@@ -54,7 +54,7 @@ A successful response
   "mpid": "AAAA",
   "security_type": "TICKER",
   "security": "SPY",
-  "borrowRate": 5.183
+  "borrow_rate": 5.183
 }
 ```
 
