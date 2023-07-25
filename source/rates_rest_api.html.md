@@ -51,7 +51,7 @@ A successful response
 ```json
 {
   "borrow_rate": -1.0,
-  "indicative_rate_expiry": "2023-07-21T21:28:15.851138Z",
+  "indicative_rate_expiry": "2023-07-22T02:00:00.00Z",
   "mpid": "AAAA",
   "rate_id": "18d7fbc0-4a95-4b1a-ab15-89165038c367",
   "security": "AAPL",
