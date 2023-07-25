@@ -50,21 +50,25 @@ A successful response
 
 ```json
 {
-  "rate_id": "d18adab0-1527-11ee-be56-0242ac120002",
+  "borrow_rate": -1.0,
+  "indicative_rate_expiry": "2023-07-21T21:28:15.851138Z",
   "mpid": "AAAA",
+  "rate_id": "18d7fbc0-4a95-4b1a-ab15-89165038c367",
+  "security": "AAPL",
   "security_type": "TICKER",
-  "security": "SPY",
-  "borrow_rate": 5.183
+  "timestamp": "2023-07-21T21:18:15.851138Z"
 }
 ```
 
-| Parameter     | Type   | Description                                          |
-| ------------- | ------ | ---------------------------------------------------- |
-| rate_id       | string | An ID for the rate response                          |
-| mpid          | string | The Market Participant Identifier that was requested |
-| security_type | string | The type of security that was requested              |
-| security      | string | The security identifier that was requested           |
-| borrow_rate   | number | Borrow rate for the security if held overnight       |
+| Parameter              | Type     | Description                                          |
+| ---------------------- | -------- | ---------------------------------------------------- |
+| borrow_rate            | number   | Borrow rate for the security if held overnight       |
+| indicative_rate_expiry | ISO 8601 | Time until quoted rate expires                       |
+| mpid                   | string   | The Market Participant Identifier that was requested |
+| rate_id                | string   | ID of the rate response                              |
+| security               | string   | The security that was requested                      |
+| security_type          | string   | The security type that was requested                 |
+| timestamp              | ISO 8601 | Timestamp of the rate response                       |
 
 </details>
 
@@ -81,11 +85,11 @@ MPID does not have a valid billing configuration
 }
 ```
 
-| Parameter    | Type   | Description                                                    |
-| ------------ | ------ | -------------------------------------------------------------- |
-| message      | string | Error message                                                  |
-| timestamp    | string | Timestamp of message                                           |
-| errorDetails | Object | A JSON object containing a message explaining the errorMessage |
+| Parameter    | Type     | Description                                                    |
+| ------------ | -------- | -------------------------------------------------------------- |
+| message      | string   | Error message                                                  |
+| timestamp    | ISO 8601 | Timestamp of message                                           |
+| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
 
 An invalid security type
 
@@ -99,11 +103,11 @@ An invalid security type
 }
 ```
 
-| Parameter    | Type   | Description                                                    |
-| ------------ | ------ | -------------------------------------------------------------- |
-| errorMessage | string | Error message                                                  |
-| timestamp    | string | Timestamp of message                                           |
-| errorDetails | Object | A JSON object containing a message explaining the errorMessage |
+| Parameter    | Type     | Description                                                    |
+| ------------ | -------- | -------------------------------------------------------------- |
+| errorMessage | string   | Error message                                                  |
+| timestamp    | ISO 8601 | Timestamp of message                                           |
+| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
 
 An invalid security
 
@@ -115,11 +119,11 @@ An invalid security
 }
 ```
 
-| Parameter    | Type   | Description                                                    |
-| ------------ | ------ | -------------------------------------------------------------- |
-| message      | string | Error message                                                  |
-| timestamp    | string | Timestamp of message                                           |
-| errorDetails | Object | A JSON object containing a message explaining the errorMessage |
+| Parameter    | Type     | Description                                                    |
+| ------------ | -------- | -------------------------------------------------------------- |
+| message      | string   | Error message                                                  |
+| timestamp    | ISO 8601 | Timestamp of message                                           |
+| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
 
 Request made outside of business hours
 
@@ -133,10 +137,10 @@ Request made outside of business hours
 }
 ```
 
-| Parameter    | Type   | Description                                                    |
-| ------------ | ------ | -------------------------------------------------------------- |
-| message      | string | Error message                                                  |
-| timestamp    | string | Timestamp of message                                           |
-| errorDetails | Object | A JSON object containing a message explaining the errorMessage |
+| Parameter    | Type     | Description                                                    |
+| ------------ | -------- | -------------------------------------------------------------- |
+| message      | string   | Error message                                                  |
+| timestamp    | ISO 8601 | Timestamp of message                                           |
+| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
 
 </details>
