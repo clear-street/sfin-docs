@@ -20,18 +20,10 @@ POST - /rates
 
 <aside class="notice">
 Borrow rates can only be fetched during business hours starting from 4:00 AM to 10:00 PM EST.
-To prevent excessive use, the limit is approximately 10,000 requests per day. Please contact us if you wish to request an increase.
+To prevent excessive use, the limit is approximately 10,000 requests per day. Please contact us at api-support@clearstreet.io if you wish to request an increase.
 </aside>
 
-### Request Object
-
-| Parameter     | Type   | Description                                                                           |
-| ------------- | ------ | ------------------------------------------------------------------------------------- |
-| mpid          | string | **REQUIRED**. The Market Participant Identifier, assigned by Clear Street (e.g. CLST) |
-| security_type | string | **REQUIRED**. The type of security (e.g. Ticker, FIGI, CUSIP, ISIN, or SEDOL)         |
-| security      | string | **REQUIRED**. The security identifier                                                 |
-
-> Request Object
+> Example Request Object
 
 ```json
 {
@@ -41,17 +33,24 @@ To prevent excessive use, the limit is approximately 10,000 requests per day. Pl
 }
 ```
 
-### Responses
+### Request Object
 
-<details>
-  <summary><aside class="success">200 OK</aside></summary>
+| Parameter     | Type   | Description                                                                           |
+| ------------- | ------ | ------------------------------------------------------------------------------------- |
+| mpid          | string | **REQUIRED**. The Market Participant Identifier, assigned by Clear Street (e.g. CLST) |
+| security_type | string | **REQUIRED**. The type of security (e.g. Ticker, FIGI, CUSIP, ISIN, or SEDOL)         |
+| security      | string | **REQUIRED**. The security identifier                                                 |
 
-A successful response
+### Successful Response
+
+<aside class="success">200 OK</aside>
+
+> A successful response
 
 ```json
 {
   "borrow_rate": -1.0,
-  "indicative_rate_expiry": "2023-07-22T02:00:00.00Z",
+  "indicative_rate_expiry": "2023-07-21T21:28:15.851138Z",
   "mpid": "AAAA",
   "rate_id": "18d7fbc0-4a95-4b1a-ab15-89165038c367",
   "security": "AAPL",
@@ -70,12 +69,11 @@ A successful response
 | security_type          | string   | The security type that was requested                 |
 | timestamp              | ISO 8601 | Timestamp of the rate response                       |
 
-</details>
+### Error Responses
 
-<details>
-  <summary><aside class="warning">400 Bad Request</aside></summary>
+<aside class="warning">400 Bad Request</aside>
 
-MPID does not have a valid billing configuration
+> MPID does not have a valid billing configuration
 
 ```json
 {
@@ -85,13 +83,15 @@ MPID does not have a valid billing configuration
 }
 ```
 
+**MPID does not have a valid billing configuration**
+
 | Parameter    | Type     | Description                                                    |
 | ------------ | -------- | -------------------------------------------------------------- |
 | message      | string   | Error message                                                  |
 | timestamp    | ISO 8601 | Timestamp of message                                           |
 | errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
 
-An invalid security type
+> Invalid security type
 
 ```json
 {
@@ -103,13 +103,15 @@ An invalid security type
 }
 ```
 
+**Invalid security type**
+
 | Parameter    | Type     | Description                                                    |
 | ------------ | -------- | -------------------------------------------------------------- |
 | errorMessage | string   | Error message                                                  |
 | timestamp    | ISO 8601 | Timestamp of message                                           |
 | errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
 
-An invalid security
+> Invalid security
 
 ```json
 {
@@ -119,13 +121,15 @@ An invalid security
 }
 ```
 
+**Invalid security**
+
 | Parameter    | Type     | Description                                                    |
 | ------------ | -------- | -------------------------------------------------------------- |
 | message      | string   | Error message                                                  |
 | timestamp    | ISO 8601 | Timestamp of message                                           |
 | errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
 
-Request made outside of business hours
+> Request made outside of business hours
 
 ```json
 {
@@ -137,10 +141,10 @@ Request made outside of business hours
 }
 ```
 
+**Request made outside of business hours**
+
 | Parameter    | Type     | Description                                                    |
 | ------------ | -------- | -------------------------------------------------------------- |
 | message      | string   | Error message                                                  |
 | timestamp    | ISO 8601 | Timestamp of message                                           |
 | errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
-
-</details>
