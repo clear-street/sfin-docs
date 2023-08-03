@@ -327,9 +327,18 @@
 
 <aside class="notice">
 Borrow rates can only be fetched during business hours starting from 4:00 AM to 10:00 PM EST.
-To prevent excessive use, the limit is approximately 10,000 requests per day. Please contact us if you wish to request an increase.
+To prevent excessive use, the limit is approximately 10,000 requests per day. Please contact us at api-support@clearstreet.io if you wish to request an increase.
 </aside>
-<h3 id='request-object'>Request Object</h3>
+
+<blockquote>
+<p>Example Request Object</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"mpid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AAAA"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"security_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TICKER"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"security"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SPY"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div><h3 id='request-object'>Request Object</h3>
 <table><thead>
 <tr>
 <th>Parameter</th>
@@ -353,117 +362,211 @@ To prevent excessive use, the limit is approximately 10,000 requests per day. Pl
 <td><strong>REQUIRED</strong>. The security identifier</td>
 </tr>
 </tbody></table>
+<h3 id='successful-response'>Successful Response</h3>
+<aside class="success">200 OK</aside>
 
 <blockquote>
-<p>Request Object</p>
+<p>A successful response</p>
 </blockquote>
 <div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"borrow_rate"</span><span class="p">:</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"indicative_rate_expiry"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-07-21T21:28:15.851138Z"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"mpid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AAAA"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"rate_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"18d7fbc0-4a95-4b1a-ab15-89165038c367"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"security"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AAPL"</span><span class="p">,</span><span class="w">
   </span><span class="nl">"security_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"TICKER"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"security"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SPY"</span><span class="w">
+  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-07-21T21:18:15.851138Z"</span><span class="w">
 </span><span class="p">}</span><span class="w">
-</span></code></pre></div><h3 id='responses'>Responses</h3>
-<details>
-  <summary><aside class="success">200 OK</aside></summary>
+</span></code></pre></div>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>borrow_rate</td>
+<td>number</td>
+<td>Borrow rate for the security if held overnight</td>
+</tr>
+<tr>
+<td>indicative_rate_expiry</td>
+<td>ISO 8601</td>
+<td>Time until quoted rate expires</td>
+</tr>
+<tr>
+<td>mpid</td>
+<td>string</td>
+<td>The Market Participant Identifier that was requested</td>
+</tr>
+<tr>
+<td>rate_id</td>
+<td>string</td>
+<td>ID of the rate response</td>
+</tr>
+<tr>
+<td>security</td>
+<td>string</td>
+<td>The security that was requested</td>
+</tr>
+<tr>
+<td>security_type</td>
+<td>string</td>
+<td>The security type that was requested</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>ISO 8601</td>
+<td>Timestamp of the rate response</td>
+</tr>
+</tbody></table>
+<h3 id='error-responses'>Error Responses</h3>
+<aside class="warning">400 Bad Request</aside>
 
-A successful response
+<blockquote>
+<p>MPID does not have a valid billing configuration</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"errorMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mpid AAAA not configured"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-07-17T21:06:27.394+00:00"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"errorDetails"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p><strong>MPID does not have a valid billing configuration</strong></p>
 
-```json
-{
-  "borrow_rate": -1.0,
-  "indicative_rate_expiry": "2023-07-22T02:00:00.00Z",
-  "mpid": "AAAA",
-  "rate_id": "18d7fbc0-4a95-4b1a-ab15-89165038c367",
-  "security": "AAPL",
-  "security_type": "TICKER",
-  "timestamp": "2023-07-21T21:18:15.851138Z"
-}
-```
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Error message</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>ISO 8601</td>
+<td>Timestamp of message</td>
+</tr>
+<tr>
+<td>errorDetails</td>
+<td>Object</td>
+<td>A JSON object containing a message explaining the errorMessage</td>
+</tr>
+</tbody></table>
 
-| Parameter              | Type     | Description                                          |
-| ---------------------- | -------- | ---------------------------------------------------- |
-| borrow_rate            | number   | Borrow rate for the security if held overnight       |
-| indicative_rate_expiry | ISO 8601 | Time until quoted rate expires                       |
-| mpid                   | string   | The Market Participant Identifier that was requested |
-| rate_id                | string   | ID of the rate response                              |
-| security               | string   | The security that was requested                      |
-| security_type          | string   | The security type that was requested                 |
-| timestamp              | ISO 8601 | Timestamp of the rate response                       |
+<blockquote>
+<p>Invalid security type</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"errorMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid request"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-07-17T21:06:27.394+00:00"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"errorDetails"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"securityType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid security type"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p><strong>Invalid security type</strong></p>
 
-</details>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>errorMessage</td>
+<td>string</td>
+<td>Error message</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>ISO 8601</td>
+<td>Timestamp of message</td>
+</tr>
+<tr>
+<td>errorDetails</td>
+<td>Object</td>
+<td>A JSON object containing a message explaining the errorMessage</td>
+</tr>
+</tbody></table>
 
-<details>
-  <summary><aside class="warning">400 Bad Request</aside></summary>
+<blockquote>
+<p>Invalid security</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"errorMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Unable to determine instrument for provided id TICKER abcde"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-07-17T21:06:27.394+00:00"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"errorDetails"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p><strong>Invalid security</strong></p>
 
-MPID does not have a valid billing configuration
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Error message</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>ISO 8601</td>
+<td>Timestamp of message</td>
+</tr>
+<tr>
+<td>errorDetails</td>
+<td>Object</td>
+<td>A JSON object containing a message explaining the errorMessage</td>
+</tr>
+</tbody></table>
 
-```json
-{
-  "errorMessage": "Mpid AAAA not configured",
-  "timestamp": "2023-07-17T21:06:27.394+00:00",
-  "errorDetails": null
-}
-```
+<blockquote>
+<p>Request made outside of business hours</p>
+</blockquote>
+<div class="highlight"><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"errorMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Invalid request"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"timestamp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2023-07-17T21:06:27.394+00:00"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"errorDetails"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"securityType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Request outside of business hours"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>
+<p><strong>Request made outside of business hours</strong></p>
 
-| Parameter    | Type     | Description                                                    |
-| ------------ | -------- | -------------------------------------------------------------- |
-| message      | string   | Error message                                                  |
-| timestamp    | ISO 8601 | Timestamp of message                                           |
-| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
-
-An invalid security type
-
-```json
-{
-  "errorMessage": "Invalid request",
-  "timestamp": "2023-07-17T21:06:27.394+00:00",
-  "errorDetails": {
-    "securityType": "Invalid security type"
-  }
-}
-```
-
-| Parameter    | Type     | Description                                                    |
-| ------------ | -------- | -------------------------------------------------------------- |
-| errorMessage | string   | Error message                                                  |
-| timestamp    | ISO 8601 | Timestamp of message                                           |
-| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
-
-An invalid security
-
-```json
-{
-  "errorMessage": "Unable to determine instrument for provided id TICKER abcde",
-  "timestamp": "2023-07-17T21:06:27.394+00:00",
-  "errorDetails": null
-}
-```
-
-| Parameter    | Type     | Description                                                    |
-| ------------ | -------- | -------------------------------------------------------------- |
-| message      | string   | Error message                                                  |
-| timestamp    | ISO 8601 | Timestamp of message                                           |
-| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
-
-Request made outside of business hours
-
-```json
-{
-  "errorMessage": "Invalid request",
-  "timestamp": "2023-07-17T21:06:27.394+00:00",
-  "errorDetails": {
-    "securityType": "Request outside of business hours"
-  }
-}
-```
-
-| Parameter    | Type     | Description                                                    |
-| ------------ | -------- | -------------------------------------------------------------- |
-| message      | string   | Error message                                                  |
-| timestamp    | ISO 8601 | Timestamp of message                                           |
-| errorDetails | Object   | A JSON object containing a message explaining the errorMessage |
-
-</details>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>message</td>
+<td>string</td>
+<td>Error message</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>ISO 8601</td>
+<td>Timestamp of message</td>
+</tr>
+<tr>
+<td>errorDetails</td>
+<td>Object</td>
+<td>A JSON object containing a message explaining the errorMessage</td>
+</tr>
+</tbody></table>
 
       </div>
       <div class="dark-box">
