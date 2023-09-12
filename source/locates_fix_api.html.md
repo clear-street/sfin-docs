@@ -1,3 +1,8 @@
+<aside class="warning">
+This documentation has been deprecated
+</aside>
+**Please navigate to our new documentation at <https://docs.clearstreet.io>**
+
 ---
 title: Locates FIX API Specification
 
