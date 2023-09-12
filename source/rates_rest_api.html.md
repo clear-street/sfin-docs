@@ -1,3 +1,8 @@
+<aside class="warning">
+This documentation has been deprecated
+</aside>
+**Please navigate to our new documentation at <https://docs.clearstreet.io>**
+
 # Introduction
 
 The Clear Street rates service enables users to request the borrow rate for a security
@@ -19,7 +24,7 @@ POST - /rates
 2. Clear Street responds with the borrow rate for the matching criteria
 
 <aside class="notice">
-Borrow rates can only be fetched during business hours starting from 4:00 AM to 10:00 PM EST.
+Borrow rates can only be fetched during business hours starting from 3:30 AM to 10:00 PM EST.
 To prevent excessive use, the limit is approximately 10,000 requests per day. Please contact us at api-support@clearstreet.io if you wish to request an increase.
 </aside>
 
